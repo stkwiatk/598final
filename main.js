@@ -1,3 +1,4 @@
+$(function () {
   const lastPlayedEl = $('#last-played');
   const nowImgEl = $('#now-img');
   const nowTitleEl = $('#now-title');
@@ -60,4 +61,22 @@
       });
   }
 
-fetchAladhan();
+  $('#tips-accordion').accordion({
+    collapsible: true,
+    heightStyle: 'content',
+    active: 0
+  });
+
+  $('.carousel').slick({
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    adaptiveHeight: true,
+    autoplay: true,
+    autoplaySpeed: 4000,
+    arrows: true
+  });
+
+  fetchAladhan();
+});
