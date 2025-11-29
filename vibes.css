@@ -27,7 +27,7 @@ body.dark footer {
   filter: brightness(0.8) saturate(0.9);
 }
 body.dark .blog,
-body.dark .music,
+body.dark .prayer,
 body.dark .widgets,
 body.dark .slideshow .carousel .slick-slide div,
 body.dark .now-playing,
@@ -118,7 +118,7 @@ main {
 }
 
 /* Ensure good display at 1280px */
-.blog, .music, .slideshow {
+.blog, .prayer, .slideshow {
   max-width: 720px;
 }
 
@@ -134,14 +134,14 @@ main {
 }
 
 /* Theme color application across key components */
-.blog h2, .music h2, .slideshow h2 { color: var(--sunset); }
+.blog h2, .prayer h2, .slideshow h2 { color: var(--sunset); }
 .now-playing { background: var(--sand); }
 .now-playing img { border-color: var(--sunset); }
 .last-track { box-shadow: 0 2px 5px var(--shadow); }
 .site-nav a { border: 2px solid var(--sunset); }
 .theme-btn { background: #ffffffcc; }
 
-.blog, .music {
+.blog, .prayer {
   flex: 1 1 400px;
   max-width: 600px;
   background: #fff;
@@ -151,14 +151,14 @@ main {
 }
 
 /* Blog */
-.blog h2, .music h2 {
+.blog h2, .prayer h2 {
   color: var(--sunset);
   border-bottom: 2px solid var(--rock);
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
 }
 
-/* Music section */
+/* prayer section */
 .now-playing {
   display: flex;
   align-items: center;
@@ -304,19 +304,19 @@ body.theme-blue-dark { --sunset:#1e88e5; --sky:#0d47a1; background:#0d2233; colo
 
 /* Adjust common blocks for dark variants (inherit color) */
 body.theme-red-dark .blog,
-body.theme-red-dark .music,
+body.theme-red-dark .prayer,
 body.theme-red-dark .widgets,
 body.theme-red-dark .slideshow .carousel .slick-slide div,
 body.theme-red-dark .now-playing,
 body.theme-red-dark .last-track,
 body.theme-yellow-dark .blog,
-body.theme-yellow-dark .music,
+body.theme-yellow-dark .prayer,
 body.theme-yellow-dark .widgets,
 body.theme-yellow-dark .slideshow .carousel .slick-slide div,
 body.theme-yellow-dark .now-playing,
 body.theme-yellow-dark .last-track,
 body.theme-blue-dark .blog,
-body.theme-blue-dark .music,
+body.theme-blue-dark .prayer,
 body.theme-blue-dark .widgets,
 body.theme-blue-dark .slideshow .carousel .slick-slide div,
 body.theme-blue-dark .now-playing,
