@@ -29,9 +29,6 @@ $(function () {
     localStorage.setItem('rc_theme_mode', nextMode);
   });
 
-  // Removed API override UI for GitHub Pages simplicity
-
-  // Language switching (inline dictionaries to avoid fetch issues on GitHub Pages)
   const langSelect = $('#lang');
   const I18N = {
     en: { brand:{title:'Leisure Co.',tagline:'Company leisure page: music, reminders, and whereabouts.'}, nav:{tips:'Tips',blog:'Blog',music:'Music',gallery:'Gallery'}, lang:{label:'Language:'}, reminders:{ title:'Team Reminders', diligence:{title:'Work Diligently',text:'Do your work very diligently. Focus on quality over speed and communicate blockers early.'}, deadlines:{title:'Respect Deadlines',text:'Plan ahead, break tasks into milestones, and keep stakeholders informed to meet delivery dates.'}, wellness:{title:'Wellness & Balance',text:'Take regular breaks, hydrate, and maintain a healthy work-life balance for sustained productivity.'}}, blog:{ title:'Company Notes', weekly:{title:'Weekly Focus',text:'Prioritize high-impact tasks, collaborate proactively, and share progress updates during standup.'}, culture:{title:'Team Culture',text:'Support peers and maintain a friendly, constructive environment.'}}, music:{now:'Now Playing',last:'Last Played'}, gallery:{title:'Employee Whereabouts'}, api:{label:'API URL:',button:'Use API'} },
@@ -61,72 +58,97 @@ $(function () {
   const nowImgEl = $('#now-img');
   const nowTitleEl = $('#now-title');
   const nowArtistEl = $('#now-artist');
+
+  
+  const VERCEL_API_URL = 'https://598final.vercel.app/api/klove';
+  
   function renderLastPlayed(items) {
     lastPlayedEl.empty();
-    items.forEach(t => {
-      const mediumImg = t.albumImageVariants && t.albumImageVariants.medium;
+    if (!items || items.length === 0) {
+      lastPlayedEl.append($('<p>').text('No recent tracks available'));
+      return;
+    }
+    
+    items.slice(0, 3).forEach(track => {
+      const mediumImg = (track.albumImageVariants && track.albumImageVariants.medium) || 
+                        track.albumImageUrl || 
+                        'https://via.placeholder.com/40?text=Album';
+      
       const el = $('<div class="last-track">');
-      el.append($('<img>').attr({ src: mediumImg || 'https://via.placeholder.com/40?text=Album', alt: `${t.songTitle || 'Unknown'} album art` }));
-      el.append($('<div>').append($('<strong>').text(t.songTitle || 'Unknown')).append($('<span>').text(t.artistName || 'Unknown artist')));
+      el.append($('<img>').attr({ 
+        src: mediumImg, 
+        alt: `${track.songTitle || 'Unknown'} album art`,
+        crossorigin: 'anonymous'
+      }));
+      
+      const info = $('<div>');
+      info.append($('<strong>').text(track.songTitle || 'Unknown Title'));
+      info.append($('<span>').text(track.artistName || 'Unknown Artist'));
+      el.append(info);
+      
       lastPlayedEl.append(el);
     });
   }
-  function setNowPlaying(np) {
-    const largeImg = np.albumImageVariants && np.albumImageVariants.large;
-    nowImgEl.attr('src', largeImg || nowImgEl.attr('src'));
-    if (largeImg) nowImgEl.attr('alt', `${np.songTitle || 'Unknown'} album art`);
+
+  function setNowPlaying(nowPlayingArray) {
+    if (!nowPlayingArray || nowPlayingArray.length === 0) {
+      nowTitleEl.text('No song playing');
+      nowArtistEl.text('');
+      return;
+    }
+    
+    const np = nowPlayingArray[0]; // K-LOVE API returns array
+    const largeImg = (np.albumImageVariants && np.albumImageVariants.large) || 
+                     np.albumImageUrl || 
+                     'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
+    
+    nowImgEl.attr({
+      src: largeImg,
+      alt: `${np.songTitle || 'Unknown'} album art`,
+      crossorigin: 'anonymous'
+    });
     nowTitleEl.text(np.songTitle || 'Unknown Title');
-    nowArtistEl.text(np.artistName || '');
+    nowArtistEl.text(np.artistName || 'Unknown Artist');
   }
 
-  // Resilient fetch chain with overrides and local mock
   function fetchKLove() {
-    const liveUrl = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
-    const proxyUrl = '/api/klove';
-    const mockUrl = './data/klove-mock.json';
-    function getOverride() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const q = params.get('api');
-        if (q && /^https?:\/\//.test(q)) return q;
-        const ls = localStorage.getItem('rc_api_override');
-        if (ls && /^https?:\/\//.test(ls)) return ls;
-      } catch (e) {}
-      return null;
-    }
-    function applyData(data) {
-      if (!data) { nowTitleEl.text('No data'); return; }
-      if (data.nowPlaying) setNowPlaying(data.nowPlaying);
-      if (Array.isArray(data.lastPlayed) && data.lastPlayed.length > 0) renderLastPlayed(data.lastPlayed.slice(0, 3));
-    }
-    function safeFetch(url) {
-      return fetch(url, { headers: { 'Accept': 'application/json,text/plain' } })
-        .then(r => {
-          if (!r.ok) throw new Error('Bad status');
-          const ct = r.headers.get('content-type') || '';
-          if (ct.includes('application/json')) return r.json();
-          return r.text().then(txt => JSON.parse(txt));
-        });
-    }
-    const override = getOverride();
-    const chain = [];
-    // Prefer mock on GitHub Pages to ensure content loads
-    chain.push(mockUrl);
-    if (override) chain.push(override);
-    chain.push(
-      proxyUrl,
-      liveUrl,
-      'https://corsproxy.io/?' + encodeURIComponent(liveUrl),
-      'https://api.allorigins.win/raw?url=' + encodeURIComponent(liveUrl),
-      'https://cors.isomorphic-git.org/' + liveUrl,
-      'https://thingproxy.freeboard.io/fetch/' + liveUrl,
-      // mock already first
-    );
-    (function next(i) {
-      if (i >= chain.length) { nowTitleEl.text('Error loading K-Love'); return; }
-      safeFetch(chain[i]).then(applyData).catch(() => next(i + 1));
-    })(0);
+    console.log('🎵 Fetching K-LOVE data from:', VERCEL_API_URL);
+    
+    fetch(VERCEL_API_URL, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log('📡 Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('✅ K-LOVE data received:', data);
+      
+      if (data.nowPlaying) {
+        setNowPlaying(data.nowPlaying);
+      }
+      
+      if (data.lastPlayed && Array.isArray(data.lastPlayed)) {
+        renderLastPlayed(data.lastPlayed);
+      }
+    })
+    .catch(error => {
+      console.error('❌ Error fetching K-LOVE data:', error);
+      nowTitleEl.text('Unable to load music data');
+      nowArtistEl.text('Please check console for details');
+      lastPlayedEl.html('<p style="color: #ff6b6b;">Error loading recent tracks</p>');
+    });
   }
 
   fetchKLove();
+
+  setInterval(fetchKLove, 30000);
+  
+  console.log('🎵 K-LOVE integration initialized');
 });
