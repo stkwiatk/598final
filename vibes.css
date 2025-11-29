@@ -17,6 +17,14 @@ body {
   line-height: 1.6;
 }
 
+.page {
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Dark theme toggle */
 body.dark {
   background: #1e1e1e;
@@ -45,6 +53,7 @@ header {
   padding: 2rem 1rem;
   box-shadow: 0 3px 8px var(--shadow);
   position: relative;
+  width: 100%;
 }
 
 .brand {
@@ -117,6 +126,8 @@ main {
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 /* Ensure good display at 1280px */
@@ -247,6 +258,41 @@ footer {
   color: #fff;
   font-weight: 600;
   box-shadow: 0 -3px 8px var(--shadow);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* jQuery UI Accordion custom styling */
+.widgets {
+  flex: 1 1 300px;
+  max-width: 480px;
+}
+
+#tips-accordion {
+  margin-top: 1rem;
+}
+
+#tips-accordion .ui-accordion-header {
+  background: #fff7e6;
+  border-radius: 10px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.3rem;
+  border: 1px solid rgba(0,0,0,0.05);
+  font-weight: 600;
+  color: var(--coyote-brown);
+}
+
+#tips-accordion .ui-accordion-header.ui-state-active {
+  background: #ffe0b2;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+
+#tips-accordion .ui-accordion-content {
+  background: #ffffff;
+  border-radius: 0 0 10px 10px;
+  border: 1px solid rgba(0,0,0,0.03);
+  padding: 0.75rem 1rem 1rem;
+  margin-bottom: 0.5rem;
 }
 
 /* API override controls */

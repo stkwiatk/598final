@@ -3,17 +3,12 @@ $(function () {
   const nowImgEl = $('#now-img');
   const nowTitleEl = $('#now-title');
   const nowArtistEl = $('#now-artist');
+  const bodyEl = $('body');
 
   function renderPrayerTimes(timings) {
     lastPlayedEl.empty();
-    const order = [
-      ['Fajr', 'Dawn prayer'],
-      ['Dhuhr', 'Noon prayer'],
-      ['Asr', 'Afternoon prayer'],
-      ['Maghrib', 'Sunset prayer'],
-      ['Isha', 'Night prayer']
-    ];
-    order.forEach(([key, label]) => {
+    const order = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+    order.forEach((key) => {
       if (!timings[key]) return;
       const el = $('<div class="last-track">');
       el.append(
@@ -24,18 +19,18 @@ $(function () {
       );
       el.append(
         $('<div>')
-          .append($('<strong>').text(label))
+          .append($('<strong>').text(key))
           .append($('<span>').text(timings[key]))
       );
       lastPlayedEl.append(el);
     });
   }
 
-  function setNowTiming(dateReadable, city, country, methodName) {
+  function setNowTiming(methodName) {
     nowImgEl.attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Mosque_Cairo.jpg/320px-Mosque_Cairo.jpg');
-    nowImgEl.attr('alt', 'City skyline');
-    nowTitleEl.text(`${city}, ${country}`);
-    nowArtistEl.text(`${dateReadable} • ${methodName}`);
+    nowImgEl.attr('alt', 'Prayer illustration');
+    nowTitleEl.text('Daily Prayer Schedule');
+    nowArtistEl.text(methodName);
   }
 
   function fetchAladhan() {
@@ -48,12 +43,8 @@ $(function () {
           return;
         }
         const d = json.data;
-        setNowTiming(
-          d.date && d.date.readable ? d.date.readable : 'Unknown date',
-          'Zagreb',
-          'HR',
-          d.meta && d.meta.method && d.meta.method.name ? d.meta.method.name : 'Aladhan'
-        );
+        const methodName = d.meta && d.meta.method && d.meta.method.name ? d.meta.method.name : 'Aladhan';
+        setNowTiming(methodName);
         if (d.timings) renderPrayerTimes(d.timings);
       })
       .catch(() => {
@@ -77,6 +68,133 @@ $(function () {
     autoplaySpeed: 4000,
     arrows: true
   });
+
+  // Theme color buttons (red / yellow / blue) toggle light theme variants
+  $('.theme-btn').on('click', function () {
+    const color = $(this).data('color');
+    bodyEl.removeClass(function (idx, cls) {
+      return (cls || '').split(' ').filter(c => c.startsWith('theme-')).join(' ');
+    });
+    bodyEl.addClass(`theme-${color}-light`);
+  });
+
+  // Simple i18n dictionary for visible text
+  const messages = {
+    en: {
+      'brand.title': 'Leisure Co.',
+      'brand.tagline': 'Company leisure page: prayer times, reminders, and whereabouts.',
+      'reminders.title': 'Team Reminders',
+      'reminders.diligence.title': 'Work Diligently',
+      'reminders.diligence.text': 'Do your work very diligently. Focus on quality over speed and communicate blockers early.',
+      'reminders.deadlines.title': 'Respect Deadlines',
+      'reminders.deadlines.text': 'Plan ahead, break tasks into milestones, and keep stakeholders informed to meet delivery dates.',
+      'reminders.wellness.title': 'Wellness & Balance',
+      'reminders.wellness.text': 'Take regular breaks, hydrate, and maintain a healthy work-life balance for sustained productivity.',
+      'blog.title': 'Company Notes',
+      'blog.weekly.title': 'Weekly Focus',
+      'blog.weekly.text': 'Prioritize high-impact tasks, collaborate proactively, and share progress updates during standup.',
+      'blog.culture.title': 'Team Culture',
+      'blog.culture.text': 'Support peers and maintain a friendly, constructive environment.',
+      'music.now': "Today's Prayer Times",
+      'music.last': 'All Prayer Times',
+      'gallery.title': 'Employee Whereabouts',
+      'nav.tips': 'Tips',
+      'nav.blog': 'Blog',
+      'nav.music': 'Prayer Times',
+      'nav.gallery': 'Gallery',
+      'lang.label': 'Language:'
+    },
+    es: {
+      'brand.title': 'Leisure Co.',
+      'brand.tagline': 'Página de ocio de la empresa: horarios de oración, recordatorios y paraderos.',
+      'reminders.title': 'Recordatorios del equipo',
+      'reminders.diligence.title': 'Trabaja diligentemente',
+      'reminders.diligence.text': 'Realiza tu trabajo con mucha diligencia. Prioriza la calidad sobre la velocidad y comunica los bloqueos pronto.',
+      'reminders.deadlines.title': 'Respeta los plazos',
+      'reminders.deadlines.text': 'Planifica con anticipación, divide las tareas en hitos e informa a las partes interesadas.',
+      'reminders.wellness.title': 'Bienestar y equilibrio',
+      'reminders.wellness.text': 'Toma descansos, hidrátate y cuida tu equilibrio entre trabajo y vida personal.',
+      'blog.title': 'Notas de la empresa',
+      'blog.weekly.title': 'Enfoque semanal',
+      'blog.weekly.text': 'Prioriza tareas de alto impacto y comparte avances en el daily.',
+      'blog.culture.title': 'Cultura de equipo',
+      'blog.culture.text': 'Apoya a tus compañeros y mantén un ambiente constructivo.',
+      'music.now': 'Horarios de oración de hoy',
+      'music.last': 'Todos los horarios de oración',
+      'gallery.title': 'Dónde está el equipo',
+      'nav.tips': 'Consejos',
+      'nav.blog': 'Blog',
+      'nav.music': 'Oración',
+      'nav.gallery': 'Galería',
+      'lang.label': 'Idioma:'
+    },
+    hr: {
+      'brand.title': 'Leisure Co.',
+      'brand.tagline': 'Stranica za odmor tvrtke: vremena molitve, podsjetnici i gdje smo.',
+      'reminders.title': 'Tim podsjetnici',
+      'reminders.diligence.title': 'Radi marljivo',
+      'reminders.diligence.text': 'Radi savjesno, usredotoči se na kvalitetu i rano prijavi prepreke.',
+      'reminders.deadlines.title': 'Poštuj rokove',
+      'reminders.deadlines.text': 'Planiraj unaprijed, razbij zadatke u manje cjeline i obavijesti dionike.',
+      'reminders.wellness.title': 'Dobrobit i ravnoteža',
+      'reminders.wellness.text': 'Redovito uzimaj pauze, pij vodu i čuvaj ravnotežu posao-život.',
+      'blog.title': 'Bilješke tvrtke',
+      'blog.weekly.title': 'Tjedni fokus',
+      'blog.weekly.text': 'Daj prednost zadacima s velikim utjecajem i surađuj s timom.',
+      'blog.culture.title': 'Kultura tima',
+      'blog.culture.text': 'Podržavaj kolege i njeguj prijateljsko okruženje.',
+      'music.now': 'Današnji namaz',
+      'music.last': 'Sva vremena namaza',
+      'gallery.title': 'Gdje su zaposlenici',
+      'nav.tips': 'Savjeti',
+      'nav.blog': 'Blog',
+      'nav.music': 'Namaz',
+      'nav.gallery': 'Galerija',
+      'lang.label': 'Jezik:'
+    },
+    ja: {
+      'brand.title': 'Leisure Co.',
+      'brand.tagline': '会社レジャーページ：礼拝時間、リマインダー、居場所。',
+      'reminders.title': 'チームのリマインダー',
+      'reminders.diligence.title': 'ていねいに仕事する',
+      'reminders.diligence.text': 'スピードより品質を大切にし、課題は早めに共有しましょう。',
+      'reminders.deadlines.title': '締め切りを守る',
+      'reminders.deadlines.text': '前もって計画し、タスクを小さく分け、関係者に状況を伝えます。',
+      'reminders.wellness.title': 'ウェルネスとバランス',
+      'reminders.wellness.text': 'こまめに休憩を取り、水分補給し、ワークライフバランスを保ちましょう。',
+      'blog.title': '会社ノート',
+      'blog.weekly.title': '今週のフォーカス',
+      'blog.weekly.text': 'インパクトの大きい仕事を優先し、こまめに進捗を共有します。',
+      'blog.culture.title': 'チーム文化',
+      'blog.culture.text': '仲間を助け合い、前向きな雰囲気を保ちます。',
+      'music.now': '本日の礼拝時間',
+      'music.last': 'すべての礼拝時間',
+      'gallery.title': 'メンバーの所在',
+      'nav.tips': 'ヒント',
+      'nav.blog': 'ブログ',
+      'nav.music': '礼拝時間',
+      'nav.gallery': 'ギャラリー',
+      'lang.label': '言語：'
+    }
+  };
+
+  function applyLanguage(lang) {
+    const dict = messages[lang] || messages.en;
+    $('[data-i18n]').each(function () {
+      const key = $(this).data('i18n');
+      if (dict[key]) {
+        $(this).text(dict[key]);
+      }
+    });
+  }
+
+  $('#lang').on('change', function () {
+    const lang = $(this).val();
+    applyLanguage(lang);
+  });
+
+  // Initialize default language
+  applyLanguage($('#lang').val() || 'en');
 
   fetchAladhan();
 });
