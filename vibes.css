@@ -155,7 +155,36 @@ main {
   box-shadow: 0 4px 12px var(--shadow);
 }
 
-/* Let Slick control slide layout so only one shows at a time */
+/* Minimal Slick essentials (local fallback if CDN CSS fails) */
+.slick-slider { position: relative; display: block; }
+.slick-list { position: relative; display: block; overflow: hidden; margin: 0; padding: 0; }
+.slick-track { display: flex; align-items: stretch; }
+.slick-slide { display: none; outline: none; }
+.slick-initialized .slick-slide { display: block; }
+.slick-prev, .slick-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background: rgba(255,255,255,0.85);
+  border: 0;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+.slick-prev { left: 8px; }
+.slick-next { right: 8px; }
+.slick-dots {
+  display: flex; justify-content: center; gap: 8px;
+  list-style: none; margin: 10px 0 0; padding: 0;
+}
+.slick-dots li { margin: 0; }
+.slick-dots button {
+  width: 10px; height: 10px; border-radius: 50%; border: none;
+  background: #bfbfbf; text-indent: -9999px; padding: 0; cursor: pointer;
+}
+.slick-dots .slick-active button { background: var(--sunset); }
 
 
 /* Theme color application across key components */

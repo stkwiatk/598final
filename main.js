@@ -60,26 +60,43 @@ $(function () {
     active: 0
   });
 
-  $('.carousel').slick({
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    adaptiveHeight: true,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    arrows: true
-  });
+  function initCarousel() {
+    if (!$.fn || !$.fn.slick) {
+      // Try again shortly if Slick isn't available yet
+      setTimeout(initCarousel, 50);
+      return;
+    }
+    if ($('.carousel').hasClass('slick-initialized')) return;
+    $('.carousel').slick({
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      adaptiveHeight: true,
+      autoplay: true,
+      autoplaySpeed: 4000,
+      arrows: true
+    });
+  }
+  initCarousel();
 
-  // Theme color buttons (red / yellow / blue) toggle light theme variants
+  // Theme color buttons (red / yellow / blue) toggle light/dark for that color
   $('.theme-btn').on('click', function () {
     const color = $(this).data('color');
+    const classes = (bodyEl.attr('class') || '').split(/\s+/);
+    const currentThemeClass = classes.find(c => c.startsWith('theme-')) || '';
+    const isSameColor =
+      currentThemeClass.startsWith(`theme-${color}-`);
+    const isLight = currentThemeClass.endsWith('-light');
+    const nextClass = isSameColor
+      ? `theme-${color}-${isLight ? 'dark' : 'light'}`
+      : `theme-${color}-light`;
+
     bodyEl.removeClass(function (idx, cls) {
       return (cls || '').split(' ').filter(c => c.startsWith('theme-')).join(' ');
     });
-    const cls = `theme-${color}-light`;
-    bodyEl.addClass(cls);
-    try { localStorage.setItem(storageKeyTheme, cls); } catch (e) { /* ignore */ }
+    bodyEl.addClass(nextClass);
+    try { localStorage.setItem(storageKeyTheme, nextClass); } catch (e) { /* ignore */ }
   });
 
   // Simple i18n dictionary for visible text
