@@ -156,9 +156,7 @@ main {
 }
 
 /* Let Slick control slide layout so only one shows at a time */
-.slideshow .carousel .slick-slide {
-  display: block !important;
-}
+
 
 /* Theme color application across key components */
 .blog h2, .prayer h2, .slideshow h2 { color: var(--sunset); }
