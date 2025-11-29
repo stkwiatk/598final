@@ -8,6 +8,34 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-3gJwYp2JpNqFQvYhG8YkY9V+VYQjvZb+3j2Z7r3yK2k=" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lYX8mZ3s2qz4qP6bNwYBpi3ZC2B3kzZ9rBqf2Z3Z0rE=" crossorigin="anonymous"></script>
+  <!-- jQuery version verification + fallback loader -->
+  <script>
+    (function() {
+      var expected = '3.7.1';
+      function verify() {
+        if (!window.jQuery) {
+          console.error('[jQuery] Not loaded, attempting fallback CDN.');
+          loadFallback();
+          return;
+        }
+        var v = jQuery.fn.jquery;
+        if (v !== expected) {
+          console.warn('[jQuery] Unexpected version: ' + v + ' (expected ' + expected + ')');
+        } else {
+          console.log('[jQuery] Verified version ' + v);
+        }
+      }
+      function loadFallback() {
+        var s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jquery/' + expected + '/jquery.min.js';
+        s.referrerPolicy = 'no-referrer';
+        s.onload = function(){ console.log('[jQuery] Fallback loaded successfully. Version: ' + (window.jQuery && jQuery.fn.jquery)); verify(); };
+        document.head.appendChild(s);
+      }
+      // Defer verification slightly to allow primary CDN load.
+      setTimeout(verify, 50);
+    })();
+  </script>
   <!-- Slick Carousel CDN -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
@@ -19,7 +47,7 @@
   <div class="page">
   <header>
     <div class="brand">
-      <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Simpleicons_Interface_business-man.svg/240px-Simpleicons_Interface_business-man.svg.png" alt="Leisure Co. Logo">
+      <img class="logo" src="https://images.seeklogo.com/logo-png/8/1/leisure-logo-png_seeklogo-83211.png" alt="Leisure Co. Logo">
       <div>
         <h1 data-i18n="brand.title">Leisure Co.</h1>
         <p data-i18n="brand.tagline">Company leisure page: prayer times, reminders, and whereabouts.</p>
@@ -84,7 +112,7 @@
     <section class="music" id="music">
       <h2 data-i18n="music.now">Todays Prayer Times</h2>
       <div class="now-playing">
-        <img id="now-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg" alt="Album Art">
+        <img id="now-img" src="https://media.islamicity.org/wp-content/uploads/2022/07/Print-Prayer-Time.jpg" alt="Album Art">
         <div>
           <h3 id="now-title">Loading...</h3>
           <p id="now-artist"></p>
@@ -101,7 +129,7 @@
         <div><img src="assets/IMG_7441.jpg" alt="A giant fountain in the middle of a manmade lake"></div>
         <div><img src="assets/IMG_8284.jpg" alt="A log flume ride"></div>
         <div><img src="assets/IMG_8319.jpg" alt="Plush seagulls with fake fries hanging out their mouth"></div>
-        <div><img src="assets/IMG_9897.jpg" alt="An assemblage of plush coyotes in a gift shop"></div>
+        <div><img src="assets/IMG_9897.JPG" alt="An assemblage of plush coyotes in a gift shop"></div>
       </div>
     </section>
 
