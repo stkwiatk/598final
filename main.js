@@ -15,7 +15,7 @@ $(function () {
       const el = $('<div class="last-track">');
       el.append(
         $('<img>').attr({
-          src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Clock_Face_Flat_Icon_Vector.svg/64px-Clock_Face_Flat_Icon_Vector.svg.png',
+          src: 'https://jesusprayerministry.com/wp-content/uploads/2023/12/Importance-of-Fajr-Prayer.jpg',
           alt: 'Clock icon'
         })
       );
@@ -29,7 +29,7 @@ $(function () {
   }
 
   function setNowTiming(methodName) {
-    nowImgEl.attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Mosque_Cairo.jpg/320px-Mosque_Cairo.jpg');
+    nowImgEl.attr('src', 'https://www.visboo.com/wp-content/uploads/2019/12/Sheikh-Zayed-Grand-Mosque.jpg');
     nowImgEl.attr('alt', 'Prayer illustration');
     nowTitleEl.text('Daily Prayer Schedule');
     nowArtistEl.text(methodName);
