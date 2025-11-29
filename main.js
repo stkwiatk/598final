@@ -102,24 +102,28 @@ $(function () {
   });
 
   function initCarousel() {
-    if (!$.fn || !$.fn.slick) {
-      // Try again shortly if Slick isn't available yet
-      setTimeout(initCarousel, 50);
-      return;
+    if (!$.fn || !$.fn.slick) return; // will be called again by loader once available
+    const $car = $('.carousel');
+    if ($car.hasClass('slick-initialized')) return;
+    try {
+      $car.slick({
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        adaptiveHeight: true,
+        autoplay: true,
+        autoplaySpeed: 4000,
+        arrows: true
+      });
+      console.log('[Carousel] Slick initialized');
+    } catch (e) {
+      console.warn('[Carousel] Slick init error, will retry', e);
+      setTimeout(initCarousel, 200);
     }
-    if ($('.carousel').hasClass('slick-initialized')) return;
-    $('.carousel').slick({
-      dots: true,
-      infinite: true,
-      speed: 500,
-      slidesToShow: 1,
-      adaptiveHeight: true,
-      autoplay: true,
-      autoplaySpeed: 4000,
-      arrows: true
-    });
   }
-  initCarousel();
+  // Defer first attempt slightly so fallback loader can engage if needed
+  setTimeout(initCarousel, 100);
 
   // Theme color buttons (red / yellow / blue) toggle light/dark for that color
   $('.theme-btn').on('click', function () {
@@ -159,6 +163,7 @@ $(function () {
       'blog.culture.text': 'Support peers and maintain a friendly, constructive environment.',
       'music.now': 'Now Playing',
       'music.last': 'Recent Songs',
+      'quran.title': 'Quran — Surah 113',
       'gallery.title': 'Employee Whereabouts',
       'nav.tips': 'Tips',
       'nav.blog': 'Blog',
@@ -181,8 +186,9 @@ $(function () {
       'blog.weekly.text': 'Prioriza tareas de alto impacto y comparte avances en el daily.',
       'blog.culture.title': 'Cultura de equipo',
       'blog.culture.text': 'Apoya a tus compañeros y mantén un ambiente constructivo.',
-      'music.now': 'Horarios de oración de hoy',
-      'music.last': 'Todos los horarios de oración',
+      'music.now': 'Reproduciendo ahora',
+      'music.last': 'Canciones recientes',
+      'quran.title': 'Corán — Sura 113',
       'gallery.title': 'Dónde está el equipo',
       'nav.tips': 'Consejos',
       'nav.blog': 'Blog',
@@ -207,6 +213,7 @@ $(function () {
       'blog.culture.text': 'Podržavaj kolege i njeguj prijateljsko okruženje.',
       'music.now': 'Sada svira',
       'music.last': 'Nedavne pjesme',
+      'quran.title': 'Kuran — sura 113',
       'gallery.title': 'Gdje su zaposlenici',
       'nav.tips': 'Savjeti',
       'nav.blog': 'Blog',
@@ -231,6 +238,7 @@ $(function () {
       'blog.culture.text': '仲間を助け合い、前向きな雰囲気を保ちます。',
       'music.now': '再生中',
       'music.last': '最近の曲',
+      'quran.title': 'コーラン — 第113章',
       'gallery.title': 'メンバーの所在',
       'nav.tips': 'ヒント',
       'nav.blog': 'ブログ',
@@ -274,7 +282,7 @@ $(function () {
 
   // Also fetch AlQuran Surah 113 (Al-Falaq) and render a short excerpt
   function fetchAlQuranSurah() {
-    const url = 'http://api.alquran.cloud/v1/surah/113';
+    const url = 'https://api.alquran.cloud/v1/surah/113';
     fetch(url)
       .then(r => r.json())
       .then(json => {
@@ -308,4 +316,166 @@ $(function () {
       });
   }
   fetchAlQuranSurah();
+
+  // Slick fallback loader if primary failed (e.g., blocked CDN)
+  (function ensureSlick(attempt){
+    attempt = attempt || 0;
+    if ($.fn && $.fn.slick) return; // already loaded
+    if (attempt > 40) { console.warn('Slick not available after retries.'); return; }
+    if (attempt === 10) { // load alternate CDN after 10 failed attempts (~500ms)
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js';
+      s.onload = function(){ console.log('[Slick] Fallback loaded'); initCarousel(); };
+      document.head.appendChild(s);
+    }
+    setTimeout(function(){ ensureSlick(attempt+1); }, 50);
+  })();
+
+  // Enhance K-LOVE fetch with retry + clearer status
+  (function enhanceKLove(){
+    let attempts = 0;
+    const maxAttempts = 3;
+    function run(){
+      attempts++;
+      fetchKLoveNowPlaying();
+      // If still showing Loading after 4s, retry (possible CORS stall)
+      setTimeout(function(){
+        if (nowTitleEl.text().trim().match(/^Loading/i) && attempts < maxAttempts){
+          console.warn('Retrying K-LOVE fetch attempt', attempts+1);
+          run();
+        } else if (nowTitleEl.text().trim().match(/^Loading/i)) {
+          nowTitleEl.text('K-LOVE unavailable (CORS?)');
+        }
+      }, 4000);
+    }
+    run();
+  })();
+
+  // Image onerror fallback for current track
+  nowImgEl.on('error', function(){
+    const src = $(this).attr('src');
+    if (src && src.includes('.lg.')) {
+      $(this).attr('src', src.replace('.lg.', '.')); // try base
+    } else {
+      $(this).attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
+    }
+  });
+
+  // --- Added: Improved K-LOVE with CORS proxy fallback & timeout ---
+  function fetchKLoveNowPlayingWithFallback() {
+    const directUrl = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+    return fetch(directUrl, { signal: controller.signal, headers: { 'Accept': 'application/json' }})
+      .then(r => { clearTimeout(timeout); if(!r.ok) throw new Error('Direct fetch failed'); return r.json(); })
+      .catch(err => {
+        console.warn('[K-LOVE] Direct fetch error or timeout, trying proxy:', err.message);
+        return fetch(proxyUrl).then(r => { if(!r.ok) throw new Error('Proxy fetch failed'); return r.json(); });
+      });
+  }
+
+  // Override existing logic: use fallback fetch path but keep rendering pipeline
+  function renderKLove(data){
+    const current = data.current || data.nowPlaying || data.song || data.currentSong || {};
+    const title = current.title || current.songTitle || current.name || 'Unknown Title';
+    const artist = current.artist || current.artistName || (current.artists && current.artists[0]) || 'Unknown Artist';
+    function getVariantUrl(v, desired){
+      if (!v) return '';
+      const desiredLower = desired.toLowerCase();
+      if (!Array.isArray(v) && typeof v === 'object') {
+        for (const k of Object.keys(v)) {
+          if (k.toLowerCase() === desiredLower) {
+            const val = v[k];
+            if (typeof val === 'string') return val;
+            if (val && typeof val === 'object') return val.url || val.imageUrl || val.src || '';
+          }
+        }
+      }
+      if (Array.isArray(v)) {
+        const desiredUpper = desired.toUpperCase();
+        const obj = v.find(o => (o.size || o.variant || o.name || '').toString().toUpperCase() === desiredUpper);
+        if (obj) return obj.url || obj.imageUrl || obj.src || '';
+      }
+      return '';
+    }
+    function addSizeSuffix(baseUrl, suffix){ return baseUrl ? baseUrl.replace(/(\.[a-zA-Z]{3,4})$/, `.${suffix}$1`) : ''; }
+    const baseAlbumImage = current.albumImageUrl || '';
+    const albumAlt = current.albumImageAltText || `${title} cover`;
+    const variants = current.albumImageVariants || current.coverArtVariants || current.albumVariants || null;
+    const variantLarge = getVariantUrl(variants, 'large');
+    const img = variantLarge || (baseAlbumImage ? addSizeSuffix(baseAlbumImage, 'lg') : '') || current.imageUrl || current.image || current.artwork || current.albumArtUrl || '';
+    if (img) { nowImgEl.attr({ src: img, alt: albumAlt }); }
+    nowTitleEl.text(title);
+    nowArtistEl.text(artist);
+    const prev = data.lastPlayed || data.previous || data.previousSongs || data.history || [];
+    lastPlayedEl.empty();
+    if (Array.isArray(prev) && prev.length) {
+      prev.slice(0,4).forEach(item => {
+        const pTitle = item.title || item.songTitle || item.name || 'Unknown Title';
+        const pArtist = item.artist || item.artistName || (item.artists && item.artists[0]) || '';
+        const pVariants = item.albumImageVariants || item.coverArtVariants || item.albumVariants || null;
+        const pBase = item.albumImageUrl || '';
+        const pAlt = item.albumImageAltText || `${pTitle} cover`;
+        const variantMedium = getVariantUrl(pVariants, 'medium');
+        const pImg = variantMedium || (pBase ? addSizeSuffix(pBase, 'md') : '') || item.imageUrl || item.image || item.artwork || item.albumArtUrl || '';
+        const $img = $('<img>').attr({ src: pImg || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: pAlt });
+        $img.on('error', function(){
+          const s = $(this).attr('src');
+          if (s && s.includes('.md.')) $(this).attr('src', s.replace('.md.', '.'));
+          else $(this).attr('src','https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
+        });
+        const el = $('<div class="last-track">');
+        el.append($img);
+        el.append($('<div>').append($('<strong>').text(pTitle)).append($('<span>').text(pArtist)));
+        lastPlayedEl.append(el);
+      });
+    } else {
+      lastPlayedEl.append($('<div class="last-track">').append($('<span>').text('No recent songs')));
+    }
+  }
+
+  function loadKLoveEnhanced(){
+    nowTitleEl.text('Loading…');
+    fetchKLoveNowPlayingWithFallback()
+      .then(data => { renderKLove(data); })
+      .catch(err => {
+        console.warn('[K-LOVE] All attempts failed:', err);
+        nowTitleEl.text('K-LOVE unavailable');
+        nowArtistEl.text('');
+      });
+  }
+  // Replace earlier simple call
+  loadKLoveEnhanced();
+
+  // --- Surah retry & error message ---
+  function fetchAlQuranSurahRetry(attempt){
+    attempt = attempt || 0;
+    const max = 2;
+    const url = 'https://api.alquran.cloud/v1/surah/113';
+    return fetch(url)
+      .then(r => r.json())
+      .then(json => {
+        if (!json || json.status !== 'OK' || !json.data) throw new Error('Unexpected response');
+        const surah = json.data;
+        const title = (surah.englishName || surah.name || 'Surah 113') + ' — ' + (surah.englishNameTranslation || '');
+        const verses = Array.isArray(surah.ayahs) ? surah.ayahs.slice(0,5) : [];
+        const block = $('<div class="last-track">');
+        block.append($('<img>').attr({ src: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Quran_Koran.svg', alt: 'Quran' }));
+        const textWrap = $('<div>');
+        textWrap.append($('<strong>').text(title.trim()));
+        if (verses.length) {
+          const snippet = verses.map(v => v.text).join(' ');
+          textWrap.append($('<span>').text(snippet));
+        }
+        block.append(textWrap);
+        $('#quran .quran-content').empty().append(block);
+      })
+      .catch(err => {
+        console.warn('[Quran] Fetch failed attempt', attempt+1, err);
+        if (attempt < max) return fetchAlQuranSurahRetry(attempt+1);
+        $('#quran .quran-content').html('<div class="error">Surah unavailable</div>');
+      });
+  }
+  fetchAlQuranSurahRetry();
 });
