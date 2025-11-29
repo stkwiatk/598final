@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Roadie's Corner</title>
+  <link rel="stylesheet" href="vibes.css">
+  <!-- jQuery + jQuery UI CDN -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-3gJwYp2JpNqFQvYhG8YkY9V+VYQjvZb+3j2Z7r3yK2k=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lYX8mZ3s2qz4qP6bNwYBpi3ZC2B3kzZ9rBqf2Z3Z0rE=" crossorigin="anonymous"></script>
+  <!-- Slick Carousel CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+  <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+  <!-- Main JS -->
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Roadie's Corner</h1>
+    <p>Beep beep! A safe haven away from coyotes and a place for tunes.</p>
+    <div class="theme-buttons" aria-label="Color Themes">
+      <button class="theme-btn" data-color="red" type="button">Red</button>
+      <button class="theme-btn" data-color="yellow" type="button">Yellow</button>
+      <button class="theme-btn" data-color="blue" type="button">Blue</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- UI Widget Section -->
+    <section class="widgets">
+      <h2>Roadie Tips</h2>
+      <div id="tips-accordion">
+        <h3>Escape Techniques</h3>
+        <div>
+          <p>Use switchbacks, dust clouds, and sudden stops to shake pursuers.</p>
+        </div>
+        <h3>Snack Preferences</h3>
+        <div>
+          <p>Seeds and berries only. Avoid anything labeled ACME.</p>
+        </div>
+        <h3>Desert Etiquette</h3>
+        <div>
+          <p>Always beep twice when passing friends and share shade.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="blog">
+      <h2>Anti-Coyote Blog</h2>
+      <article>
+        <h3>How to Outsmart a Coyote</h3>
+        <p>Step one: speed. Step two: more speed. Step three: always check the label on ACME products…</p>
+      </article>
+      <article>
+        <h3>Desert Survival Tips</h3>
+        <p>Hydrate, avoid anvils falling from the sky, and keep your wings stretched out for sudden sprints.</p>
+      </article>
+    </section>
+
+    <!-- Music Section -->
+    <section class="music">
+      <h2>Now jamming...</h2>
+      <div class="now-playing">
+        <img id="now-img" src="https://via.placeholder.com/150?text=Beep+Beep!" alt="Album Art">
+        <div>
+          <h3 id="now-title">Loading...</h3>
+          <p id="now-artist"></p>
+        </div>
+      </div>
+      <h2>Last Played</h2>
+      <div class="last-played" id="last-played"></div>
+    </section>
+
+    <!-- Slideshow Section -->
+    <section class="slideshow">
+      <h2>Roadie Gallery</h2>
+      <div class="carousel">
+        <div><img src="https://via.placeholder.com/600x300?text=Desert+Run+1" alt="Slide 1"></div>
+        <div><img src="https://via.placeholder.com/600x300?text=Desert+Run+2" alt="Slide 2"></div>
+        <div><img src="https://via.placeholder.com/600x300?text=Desert+Run+3" alt="Slide 3"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; Roadie’s Corner</p>
+    <div class="prefs">
+      <label for="username">Your name:</label>
+      <input type="text" id="username" placeholder="Roadie fan" />
+      <button id="save-prefs">Save</button>
+      <span id="welcome"></span>
+    </div>
+  </footer>
+
+</body>
+</html>
