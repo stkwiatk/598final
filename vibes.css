@@ -115,10 +115,13 @@ main {
   justify-content: center;
   padding: 2rem;
   gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Ensure good display at 1280px */
 .blog, .prayer, .slideshow {
+  flex: 1 1 360px;
   max-width: 720px;
 }
 
@@ -131,6 +134,11 @@ main {
   object-fit: cover;
   border-radius: 12px;
   box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Let Slick control slide layout so only one shows at a time */
+.slideshow .carousel .slick-slide {
+  display: block !important;
 }
 
 /* Theme color application across key components */
