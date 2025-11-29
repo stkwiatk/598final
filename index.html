@@ -108,18 +108,26 @@
       </article>
     </section>
 
-    <!-- Prayer Times Section -->
-    <section class="music" id="music">
-      <h2 data-i18n="music.now">Todays Prayer Times</h2>
+    <!-- Music / Now Playing Section -->
+    <section class="prayer" id="music">
+      <h2>Now Playing</h2>
       <div class="now-playing">
-        <img id="now-img" src="https://media.islamicity.org/wp-content/uploads/2022/07/Print-Prayer-Time.jpg" alt="Album Art">
+        <img id="now-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg" alt="Album Art">
         <div>
           <h3 id="now-title">Loading...</h3>
           <p id="now-artist"></p>
         </div>
       </div>
-      <h2 data-i18n="music.last">All Prayer Times</h2>
+      <h2>Recent Songs</h2>
       <div class="last-played" id="last-played"></div>
+    </section>
+
+    <!-- Quran Section -->
+    <section class="quran" id="quran">
+      <h2>Quran — Surah 113</h2>
+      <div class="quran-content">
+        <!-- Filled dynamically by main.js (fetchAlQuranSurah appends into #last-played for now) -->
+      </div>
     </section>
 
     <section class="slideshow" id="gallery">

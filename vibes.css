@@ -224,8 +224,8 @@ main {
 }
 
 .now-playing img {
-  width: 160px;
-  height: 160px;
+  width: 300px; /* large for current track */
+  height: 300px;
   object-fit: cover;
   border-radius: 10px;
   margin-right: 1rem;
@@ -265,8 +265,8 @@ main {
 }
 
 .last-track img {
-  width: 40px;
-  height: 40px;
+  width: 120px; /* medium for history */
+  height: 120px;
   object-fit: cover;
   margin-right: 0.7rem;
   border-radius: 6px;
@@ -302,6 +302,25 @@ footer {
 .widgets {
   flex: 1 1 300px;
   max-width: 480px;
+}
+
+/* Quran section styling */
+.quran {
+  flex: 1 1 400px;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px var(--shadow);
+  padding: 1.5rem;
+}
+.quran h2 {
+  color: var(--sunset);
+  border-bottom: 2px solid var(--rock);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+.quran-content {
+  display: block;
 }
 
 #tips-accordion {

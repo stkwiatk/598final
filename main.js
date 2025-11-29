@@ -7,35 +7,6 @@ $(function () {
   const storageKeyLang = 'leisure_lang';
   const storageKeyTheme = 'leisure_theme';
 
-  function renderPrayerTimes(timings) {
-    lastPlayedEl.empty();
-    const order = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
-    order.forEach((key) => {
-      if (!timings[key]) return;
-      const el = $('<div class="last-track">');
-      el.append(
-        $('<img>').attr({
-          src: 'https://jesusprayerministry.com/wp-content/uploads/2023/12/Importance-of-Fajr-Prayer.jpg',
-          alt: 'Clock icon'
-        })
-      );
-      el.append(
-        $('<div>')
-          .append($('<strong>').text(key))
-          .append($('<span>').text(timings[key]))
-      );
-      lastPlayedEl.append(el);
-    });
-  }
-
-  function setNowTiming(methodName) {
-    nowImgEl.attr('src', 'https://www.visboo.com/wp-content/uploads/2019/12/Sheikh-Zayed-Grand-Mosque.jpg');
-    nowImgEl.attr('alt', 'Prayer illustration');
-    nowTitleEl.text('Daily Prayer Schedule');
-    nowArtistEl.text(methodName);
-  }
-
-  // Attempt K-LOVE Now Playing API
   function fetchKLoveNowPlaying() {
     const url = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
     nowTitleEl.text('Loading…');
@@ -74,26 +45,38 @@ $(function () {
           return '';
         }
 
+        // Helper to add size suffix before file extension (e.g. .jpg -> .lg.jpg)
+        function addSizeSuffix(baseUrl, suffix) {
+          if (!baseUrl) return '';
+          return baseUrl.replace(/(\.[a-zA-Z]{3,4})$/, `.${suffix}$1`);
+        }
+
+        const baseAlbumImage = current.albumImageUrl || '';
+        const albumAlt = current.albumImageAltText || `${title} cover`;
         const variants = current.albumImageVariants || current.coverArtVariants || current.albumVariants || null;
-        const img = getVariantUrl(variants, 'large') || current.imageUrl || current.image || current.artwork || current.albumArtUrl || '';
+        const variantLarge = getVariantUrl(variants, 'large');
+        const img = variantLarge || (baseAlbumImage ? addSizeSuffix(baseAlbumImage, 'lg') : '') || current.imageUrl || current.image || current.artwork || current.albumArtUrl || '';
 
         if (img) {
           nowImgEl.attr('src', img);
-          nowImgEl.attr('alt', `${title} cover`);
+          nowImgEl.attr('alt', albumAlt);
         }
         nowTitleEl.text(title);
         nowArtistEl.text(artist);
 
-        const prev = data.previous || data.previousSongs || data.history || [];
+        const prev = data.lastPlayed || data.previous || data.previousSongs || data.history || [];
         lastPlayedEl.empty();
         if (Array.isArray(prev) && prev.length) {
-          prev.slice(0, 10).forEach(item => {
+          prev.slice(0, 4).forEach(item => {
             const pTitle = item.title || item.songTitle || item.name || 'Unknown Title';
             const pArtist = item.artist || item.artistName || (item.artists && item.artists[0]) || '';
             const pVariants = item.albumImageVariants || item.coverArtVariants || item.albumVariants || null;
-            const pImg = getVariantUrl(pVariants, 'medium') || item.imageUrl || item.image || item.artwork || item.albumArtUrl || '';
+            const pBase = item.albumImageUrl || '';
+            const pAlt = item.albumImageAltText || `${pTitle} cover`;
+            const variantMedium = getVariantUrl(pVariants, 'medium');
+            const pImg = variantMedium || (pBase ? addSizeSuffix(pBase, 'md') : '') || item.imageUrl || item.image || item.artwork || item.albumArtUrl || '';
             const el = $('<div class="last-track">');
-            el.append($('<img>').attr({ src: pImg || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: 'Album art' }));
+            el.append($('<img>').attr({ src: pImg || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: pAlt }));
             el.append(
               $('<div>')
                 .append($('<strong>').text(pTitle))
@@ -174,12 +157,12 @@ $(function () {
       'blog.weekly.text': 'Prioritize high-impact tasks, collaborate proactively, and share progress updates during standup.',
       'blog.culture.title': 'Team Culture',
       'blog.culture.text': 'Support peers and maintain a friendly, constructive environment.',
-      'music.now': "Today's Prayer Times",
-      'music.last': 'All Prayer Times',
+      'music.now': 'Now Playing',
+      'music.last': 'Recent Songs',
       'gallery.title': 'Employee Whereabouts',
       'nav.tips': 'Tips',
       'nav.blog': 'Blog',
-      'nav.music': 'Prayer Times',
+      'nav.music': 'Music',
       'nav.gallery': 'Gallery',
       'lang.label': 'Language:'
     },
@@ -203,7 +186,7 @@ $(function () {
       'gallery.title': 'Dónde está el equipo',
       'nav.tips': 'Consejos',
       'nav.blog': 'Blog',
-      'nav.music': 'Oración',
+      'nav.music': 'Música',
       'nav.gallery': 'Galería',
       'lang.label': 'Idioma:'
     },
@@ -222,12 +205,12 @@ $(function () {
       'blog.weekly.text': 'Daj prednost zadacima s velikim utjecajem i surađuj s timom.',
       'blog.culture.title': 'Kultura tima',
       'blog.culture.text': 'Podržavaj kolege i njeguj prijateljsko okruženje.',
-      'music.now': 'Današnji namaz',
-      'music.last': 'Sva vremena namaza',
+      'music.now': 'Sada svira',
+      'music.last': 'Nedavne pjesme',
       'gallery.title': 'Gdje su zaposlenici',
       'nav.tips': 'Savjeti',
       'nav.blog': 'Blog',
-      'nav.music': 'Namaz',
+      'nav.music': 'Glazba',
       'nav.gallery': 'Galerija',
       'lang.label': 'Jezik:'
     },
@@ -246,12 +229,12 @@ $(function () {
       'blog.weekly.text': 'インパクトの大きい仕事を優先し、こまめに進捗を共有します。',
       'blog.culture.title': 'チーム文化',
       'blog.culture.text': '仲間を助け合い、前向きな雰囲気を保ちます。',
-      'music.now': '本日の礼拝時間',
-      'music.last': 'すべての礼拝時間',
+      'music.now': '再生中',
+      'music.last': '最近の曲',
       'gallery.title': 'メンバーの所在',
       'nav.tips': 'ヒント',
       'nav.blog': 'ブログ',
-      'nav.music': '礼拝時間',
+      'nav.music': 'ミュージック',
       'nav.gallery': 'ギャラリー',
       'lang.label': '言語：'
     }
@@ -312,7 +295,13 @@ $(function () {
           textWrap.append($('<span>').text(snippet));
         }
         block.append(textWrap);
-        lastPlayedEl.append(block);
+        const quranContainer = $('#quran .quran-content');
+        if (quranContainer.length) {
+          quranContainer.empty().append(block);
+        } else {
+          // Fallback to lastPlayed if quran section is missing
+          lastPlayedEl.append(block);
+        }
       })
       .catch(() => {
         // Silent failure: keep UI tidy
