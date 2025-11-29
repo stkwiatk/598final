@@ -35,22 +35,80 @@ $(function () {
     nowArtistEl.text(methodName);
   }
 
-  function fetchAladhan() {
-    const url = 'https://api.aladhan.com/v1/timingsByCity/22-03-2025?city=Zagreb&country=HR&method=2&shafaq=general&tune=5%2C3%2C5%2C7%2C9%2C-1%2C0%2C8%2C-6&school=0&timezonestring=America%2FPhoenix&calendarMethod=DIYANET';
+  // Attempt K-LOVE Now Playing API
+  function fetchKLoveNowPlaying() {
+    const url = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
+    nowTitleEl.text('Loading…');
     fetch(url)
-      .then(r => r.json())
-      .then(json => {
-        if (!json || json.code !== 200 || !json.data) {
-          nowTitleEl.text('No data');
-          return;
-        }
-        const d = json.data;
-        const methodName = d.meta && d.meta.method && d.meta.method.name ? d.meta.method.name : 'Aladhan';
-        setNowTiming(methodName);
-        if (d.timings) renderPrayerTimes(d.timings);
+      .then(r => {
+        if (!r.ok) throw new Error('Network');
+        return r.json();
       })
-      .catch(() => {
-        nowTitleEl.text('Error loading times');
+      .then(data => {
+        const current = data.current || data.nowPlaying || data.song || data.currentSong || {};
+        const title = current.title || current.songTitle || current.name || 'Unknown Title';
+        const artist = current.artist || current.artistName || (current.artists && current.artists[0]) || 'Unknown Artist';
+
+        function getVariantUrl(v, desired) {
+          if (!v) return '';
+          const desiredLower = desired.toLowerCase();
+          // Object with direct keys (small/medium/large)
+          if (!Array.isArray(v) && typeof v === 'object') {
+            for (const k of Object.keys(v)) {
+              if (k.toLowerCase() === desiredLower) {
+                const val = v[k];
+                if (typeof val === 'string') return val;
+                if (val && typeof val === 'object') return val.url || val.imageUrl || val.src || '';
+              }
+            }
+          }
+          // Array of variant objects
+          if (Array.isArray(v)) {
+            const desiredUpper = desired.toUpperCase();
+            const obj = v.find(o => {
+              const sizeKey = (o.size || o.variant || o.name || '').toString().toUpperCase();
+              return sizeKey === desiredUpper;
+            });
+            if (obj) return obj.url || obj.imageUrl || obj.src || '';
+          }
+          return '';
+        }
+
+        const variants = current.albumImageVariants || current.coverArtVariants || current.albumVariants || null;
+        const img = getVariantUrl(variants, 'large') || current.imageUrl || current.image || current.artwork || current.albumArtUrl || '';
+
+        if (img) {
+          nowImgEl.attr('src', img);
+          nowImgEl.attr('alt', `${title} cover`);
+        }
+        nowTitleEl.text(title);
+        nowArtistEl.text(artist);
+
+        const prev = data.previous || data.previousSongs || data.history || [];
+        lastPlayedEl.empty();
+        if (Array.isArray(prev) && prev.length) {
+          prev.slice(0, 10).forEach(item => {
+            const pTitle = item.title || item.songTitle || item.name || 'Unknown Title';
+            const pArtist = item.artist || item.artistName || (item.artists && item.artists[0]) || '';
+            const pVariants = item.albumImageVariants || item.coverArtVariants || item.albumVariants || null;
+            const pImg = getVariantUrl(pVariants, 'medium') || item.imageUrl || item.image || item.artwork || item.albumArtUrl || '';
+            const el = $('<div class="last-track">');
+            el.append($('<img>').attr({ src: pImg || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: 'Album art' }));
+            el.append(
+              $('<div>')
+                .append($('<strong>').text(pTitle))
+                .append($('<span>').text(pArtist))
+            );
+            lastPlayedEl.append(el);
+          });
+        } else {
+          lastPlayedEl.append($('<div class="last-track">').append($('<span>').text('No recent songs')));
+        }
+      })
+      .catch(err => {
+        nowTitleEl.text('Error loading K-LOVE');
+        nowArtistEl.text('');
+        console.warn('K-LOVE fetch failed:', err);
       });
   }
 
@@ -229,5 +287,36 @@ $(function () {
 
   applyLanguage($('#lang').val() || 'en');
 
-  fetchAladhan();
+  fetchKLoveNowPlaying();
+
+  // Also fetch AlQuran Surah 113 (Al-Falaq) and render a short excerpt
+  function fetchAlQuranSurah() {
+    const url = 'http://api.alquran.cloud/v1/surah/113';
+    fetch(url)
+      .then(r => r.json())
+      .then(json => {
+        if (!json || json.status !== 'OK' || !json.data) return;
+        const surah = json.data;
+        const title = (surah.englishName || surah.name || 'Surah 113') + ' — ' + (surah.englishNameTranslation || '');
+        const verses = Array.isArray(surah.ayahs) ? surah.ayahs.slice(0, 5) : [];
+
+        const block = $('<div class="last-track">');
+        block.append($('<img>').attr({
+          src: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Quran_Koran.svg',
+          alt: 'Quran'
+        }));
+        const textWrap = $('<div>');
+        textWrap.append($('<strong>').text(title.trim()));
+        if (verses.length) {
+          const snippet = verses.map(v => v.text).join(' ');
+          textWrap.append($('<span>').text(snippet));
+        }
+        block.append(textWrap);
+        lastPlayedEl.append(block);
+      })
+      .catch(() => {
+        // Silent failure: keep UI tidy
+      });
+  }
+  fetchAlQuranSurah();
 });
