@@ -16,67 +16,38 @@ $(function () {
         return r.json();
       })
       .then(data => {
-        const current = data.current || data.nowPlaying || data.song || data.currentSong || {};
-        const title = current.title || current.songTitle || current.name || 'Unknown Title';
-        const artist = current.artist || current.artistName || (current.artists && current.artists[0]) || 'Unknown Artist';
+        const current = data.nowPlaying || {};
+        const title = current.songTitle || 'Unknown Title';
+        const artist = current.artistName || 'Unknown Artist';
 
-        function getVariantUrl(v, desired) {
-          if (!v) return '';
-          const desiredLower = desired.toLowerCase();
-          // Object with direct keys (small/medium/large)
-          if (!Array.isArray(v) && typeof v === 'object') {
-            for (const k of Object.keys(v)) {
-              if (k.toLowerCase() === desiredLower) {
-                const val = v[k];
-                if (typeof val === 'string') return val;
-                if (val && typeof val === 'object') return val.url || val.imageUrl || val.src || '';
-              }
-            }
-          }
-          // Array of variant objects
-          if (Array.isArray(v)) {
-            const desiredUpper = desired.toUpperCase();
-            const obj = v.find(o => {
-              const sizeKey = (o.size || o.variant || o.name || '').toString().toUpperCase();
-              return sizeKey === desiredUpper;
-            });
-            if (obj) return obj.url || obj.imageUrl || obj.src || '';
-          }
-          return '';
-        }
+        const albumVariants = current.albumImageVariants || {};
+        const albumLarge = albumVariants.large || current.albumImageUrl || '';
+        const albumAlt = current.albumImageAltText || `${title} — ${artist}`;
 
-        // Helper to add size suffix before file extension (e.g. .jpg -> .lg.jpg)
-        function addSizeSuffix(baseUrl, suffix) {
-          if (!baseUrl) return '';
-          return baseUrl.replace(/(\.[a-zA-Z]{3,4})$/, `.${suffix}$1`);
-        }
-
-        const baseAlbumImage = current.albumImageUrl || '';
-        const albumAlt = current.albumImageAltText || `${title} cover`;
-        const variants = current.albumImageVariants || current.coverArtVariants || current.albumVariants || null;
-        const variantLarge = getVariantUrl(variants, 'large');
-        const img = variantLarge || (baseAlbumImage ? addSizeSuffix(baseAlbumImage, 'lg') : '') || current.imageUrl || current.image || current.artwork || current.albumArtUrl || '';
-
-        if (img) {
-          nowImgEl.attr('src', img);
-          nowImgEl.attr('alt', albumAlt);
+        if (albumLarge) {
+          nowImgEl.attr({ src: albumLarge, alt: albumAlt });
         }
         nowTitleEl.text(title);
         nowArtistEl.text(artist);
 
-        const prev = data.lastPlayed || data.previous || data.previousSongs || data.history || [];
+        const prev = Array.isArray(data.lastPlayed) ? data.lastPlayed : [];
         lastPlayedEl.empty();
-        if (Array.isArray(prev) && prev.length) {
+        if (prev.length) {
           prev.slice(0, 4).forEach(item => {
-            const pTitle = item.title || item.songTitle || item.name || 'Unknown Title';
-            const pArtist = item.artist || item.artistName || (item.artists && item.artists[0]) || '';
-            const pVariants = item.albumImageVariants || item.coverArtVariants || item.albumVariants || null;
-            const pBase = item.albumImageUrl || '';
-            const pAlt = item.albumImageAltText || `${pTitle} cover`;
-            const variantMedium = getVariantUrl(pVariants, 'medium');
-            const pImg = variantMedium || (pBase ? addSizeSuffix(pBase, 'md') : '') || item.imageUrl || item.image || item.artwork || item.albumArtUrl || '';
+            const pTitle = item.songTitle || 'Unknown Title';
+            const pArtist = item.artistName || '';
+            const pVariants = item.albumImageVariants || {};
+            const pMedium = pVariants.medium || item.albumImageUrl || '';
+            const pAlt = item.albumImageAltText || `${pTitle} — ${pArtist}`;
+            const imgSrc = pMedium || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
+
+            const $img = $('<img>').attr({ src: imgSrc, alt: pAlt });
+            $img.on('error', function(){
+              $(this).attr('src','https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
+            });
+
             const el = $('<div class="last-track">');
-            el.append($('<img>').attr({ src: pImg || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: pAlt }));
+            el.append($img);
             el.append(
               $('<div>')
                 .append($('<strong>').text(pTitle))
@@ -361,92 +332,7 @@ $(function () {
     }
   });
 
-  // --- Added: Improved K-LOVE with CORS proxy fallback & timeout ---
-  function fetchKLoveNowPlayingWithFallback() {
-    const directUrl = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
-    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
-    return fetch(directUrl, { signal: controller.signal, headers: { 'Accept': 'application/json' }})
-      .then(r => { clearTimeout(timeout); if(!r.ok) throw new Error('Direct fetch failed'); return r.json(); })
-      .catch(err => {
-        console.warn('[K-LOVE] Direct fetch error or timeout, trying proxy:', err.message);
-        return fetch(proxyUrl).then(r => { if(!r.ok) throw new Error('Proxy fetch failed'); return r.json(); });
-      });
-  }
-
-  // Override existing logic: use fallback fetch path but keep rendering pipeline
-  function renderKLove(data){
-    const current = data.current || data.nowPlaying || data.song || data.currentSong || {};
-    const title = current.title || current.songTitle || current.name || 'Unknown Title';
-    const artist = current.artist || current.artistName || (current.artists && current.artists[0]) || 'Unknown Artist';
-    function getVariantUrl(v, desired){
-      if (!v) return '';
-      const desiredLower = desired.toLowerCase();
-      if (!Array.isArray(v) && typeof v === 'object') {
-        for (const k of Object.keys(v)) {
-          if (k.toLowerCase() === desiredLower) {
-            const val = v[k];
-            if (typeof val === 'string') return val;
-            if (val && typeof val === 'object') return val.url || val.imageUrl || val.src || '';
-          }
-        }
-      }
-      if (Array.isArray(v)) {
-        const desiredUpper = desired.toUpperCase();
-        const obj = v.find(o => (o.size || o.variant || o.name || '').toString().toUpperCase() === desiredUpper);
-        if (obj) return obj.url || obj.imageUrl || obj.src || '';
-      }
-      return '';
-    }
-    function addSizeSuffix(baseUrl, suffix){ return baseUrl ? baseUrl.replace(/(\.[a-zA-Z]{3,4})$/, `.${suffix}$1`) : ''; }
-    const baseAlbumImage = current.albumImageUrl || '';
-    const albumAlt = current.albumImageAltText || `${title} cover`;
-    const variants = current.albumImageVariants || current.coverArtVariants || current.albumVariants || null;
-    const variantLarge = getVariantUrl(variants, 'large');
-    const img = variantLarge || (baseAlbumImage ? addSizeSuffix(baseAlbumImage, 'lg') : '') || current.imageUrl || current.image || current.artwork || current.albumArtUrl || '';
-    if (img) { nowImgEl.attr({ src: img, alt: albumAlt }); }
-    nowTitleEl.text(title);
-    nowArtistEl.text(artist);
-    const prev = data.lastPlayed || data.previous || data.previousSongs || data.history || [];
-    lastPlayedEl.empty();
-    if (Array.isArray(prev) && prev.length) {
-      prev.slice(0,4).forEach(item => {
-        const pTitle = item.title || item.songTitle || item.name || 'Unknown Title';
-        const pArtist = item.artist || item.artistName || (item.artists && item.artists[0]) || '';
-        const pVariants = item.albumImageVariants || item.coverArtVariants || item.albumVariants || null;
-        const pBase = item.albumImageUrl || '';
-        const pAlt = item.albumImageAltText || `${pTitle} cover`;
-        const variantMedium = getVariantUrl(pVariants, 'medium');
-        const pImg = variantMedium || (pBase ? addSizeSuffix(pBase, 'md') : '') || item.imageUrl || item.image || item.artwork || item.albumArtUrl || '';
-        const $img = $('<img>').attr({ src: pImg || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: pAlt });
-        $img.on('error', function(){
-          const s = $(this).attr('src');
-          if (s && s.includes('.md.')) $(this).attr('src', s.replace('.md.', '.'));
-          else $(this).attr('src','https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
-        });
-        const el = $('<div class="last-track">');
-        el.append($img);
-        el.append($('<div>').append($('<strong>').text(pTitle)).append($('<span>').text(pArtist)));
-        lastPlayedEl.append(el);
-      });
-    } else {
-      lastPlayedEl.append($('<div class="last-track">').append($('<span>').text('No recent songs')));
-    }
-  }
-
-  function loadKLoveEnhanced(){
-    nowTitleEl.text('Loading…');
-    fetchKLoveNowPlayingWithFallback()
-      .then(data => { renderKLove(data); })
-      .catch(err => {
-        console.warn('[K-LOVE] All attempts failed:', err);
-        nowTitleEl.text('K-LOVE unavailable');
-        nowArtistEl.text('');
-      });
-  }
-  // Replace earlier simple call
-  loadKLoveEnhanced();
+  // remove enhanced wrapper, basic fetch already called above
 
   // --- Surah retry & error message ---
   function fetchAlQuranSurahRetry(attempt){
