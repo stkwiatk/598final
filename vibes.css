@@ -47,6 +47,53 @@ header {
   position: relative;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.brand .logo {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px var(--shadow);
+  border: 2px solid #fff;
+}
+
+.site-nav {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.site-nav a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.15);
+}
+.site-nav a:hover { background: rgba(255,255,255,0.25); }
+
+/* Language selector */
+.lang-select {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #fff;
+}
+.lang-select select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: none;
+}
+
 h1 {
   font-size: 2.5rem;
   margin: 0;
@@ -65,6 +112,19 @@ main {
   padding: 2rem;
   gap: 2rem;
 }
+
+/* Ensure good display at 1280px */
+.blog, .music, .slideshow {
+  max-width: 720px;
+}
+
+/* Theme color application across key components */
+.blog h2, .music h2, .slideshow h2 { color: var(--sunset); }
+.now-playing { background: var(--sand); }
+.now-playing img { border-color: var(--sunset); }
+.last-track { box-shadow: 0 2px 5px var(--shadow); }
+.site-nav a { background: color-mix(in oklab, var(--sunset) 20%, white); }
+.theme-btn { background: color-mix(in oklab, var(--sky) 25%, white); }
 
 .blog, .music {
   flex: 1 1 400px;
@@ -166,6 +226,26 @@ footer {
   box-shadow: 0 -3px 8px var(--shadow);
 }
 
+/* API override controls */
+.api-override {
+  margin-top: 0.75rem;
+}
+.api-override input[type="url"] {
+  width: min(600px, 90%);
+  max-width: 100%;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--rock);
+  margin: 0 0.4rem;
+}
+.api-override button {
+  padding: 0.4rem 0.7rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* Theme buttons */
 .theme-buttons {
   position: absolute;
@@ -245,5 +325,119 @@ body.theme-blue-dark footer { filter: brightness(0.85) saturate(0.9); }
   .now-playing img {
     margin-right: 0;
     margin-bottom: 1rem;
+  }
+}
+
+/* K-LOVE Now Playing Styles */
+#now-playing-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.now-playing-section {
+  margin-bottom: 3rem;
+}
+
+.song-current {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.album-art-large {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.song-info-large h2 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.song-info-large h3 {
+  font-size: 1.8rem;
+  margin: 0 0 0.5rem 0;
+  opacity: 0.9;
+}
+
+.song-info-large .song-album {
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.previous-songs-section h3 {
+  margin-bottom: 1.5rem;
+}
+
+.previous-songs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.song-previous {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.song-previous:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.album-art-medium {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.song-info-medium h4 {
+  font-size: 1.2rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.song-info-medium p {
+  font-size: 1rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.error {
+  color: #ff6b6b;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .song-current {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .album-art-large {
+    width: 200px;
+    height: 200px;
+  }
+  
+  .song-info-large h2 {
+    font-size: 1.8rem;
+  }
+  
+  .previous-songs-grid {
+    grid-template-columns: 1fr;
   }
 }

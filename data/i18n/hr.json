@@ -1,0 +1,19 @@
+{
+  "brand": {"title": "Leisure Co.", "tagline": "Stranica za slobodno vrijeme: glazba, podsjetnici i lokacije."},
+  "nav": {"tips": "Savjeti", "blog": "Blog", "music": "Glazba", "gallery": "Galerija"},
+  "lang": {"label": "Jezik:"},
+  "reminders": {
+    "title": "Tim podsjetnici",
+    "diligence": {"title": "Radite marljivo", "text": "Radite vrlo marljivo. Dajte prednost kvaliteti nad brzinom i rano komunicirajte blokade."},
+    "deadlines": {"title": "Poštujte rokove", "text": "Planirajte unaprijed, podijelite zadatke na prekretnice i obavještavajte dionike kako biste ispunili rokove."},
+    "wellness": {"title": "Zdravlje i ravnoteža", "text": "Uzimajte redovite pauze, hidrirajte se i održavajte zdravu ravnotežu između posla i života."}
+  },
+  "blog": {
+    "title": "Bilješke tvrtke",
+    "weekly": {"title": "Tjedni fokus", "text": "Prioritet dajte zadacima velikog utjecaja, surađujte proaktivno i dijelite napredak na dnevnim sastancima."},
+    "culture": {"title": "Tim kultura", "text": "Podržavajte kolege i održavajte prijateljsko, konstruktivno okruženje."}
+  },
+  "music": {"now": "Sada svira", "last": "Zadnje reproducirano"},
+  "gallery": {"title": "Lokacije zaposlenika"},
+  "api": {"label": "API URL:", "button": "Koristi API"}
+}

@@ -1,0 +1,19 @@
+{
+  "brand": {"title": "Leisure Co.", "tagline": "Company leisure page: music, reminders, and whereabouts."},
+  "nav": {"tips": "Tips", "blog": "Blog", "music": "Music", "gallery": "Gallery"},
+  "lang": {"label": "Language:"},
+  "reminders": {
+    "title": "Team Reminders",
+    "diligence": {"title": "Work Diligently", "text": "Do your work very diligently. Focus on quality over speed and communicate blockers early."},
+    "deadlines": {"title": "Respect Deadlines", "text": "Plan ahead, break tasks into milestones, and keep stakeholders informed to meet delivery dates."},
+    "wellness": {"title": "Wellness & Balance", "text": "Take regular breaks, hydrate, and maintain a healthy work-life balance for sustained productivity."}
+  },
+  "blog": {
+    "title": "Company Notes",
+    "weekly": {"title": "Weekly Focus", "text": "Prioritize high-impact tasks, collaborate proactively, and share progress updates during standup."},
+    "culture": {"title": "Team Culture", "text": "Support peers and maintain a friendly, constructive environment."}
+  },
+  "music": {"now": "Now Playing", "last": "Last Played"},
+  "gallery": {"title": "Employee Whereabouts"},
+  "api": {"label": "API URL:", "button": "Use API"}
+}

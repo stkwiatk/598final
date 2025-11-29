@@ -1,0 +1,19 @@
+{
+  "brand": {"title": "Leisure Co.", "tagline": "Página de ocio de la empresa: música, recordatorios y paraderos."},
+  "nav": {"tips": "Consejos", "blog": "Blog", "music": "Música", "gallery": "Galería"},
+  "lang": {"label": "Idioma:"},
+  "reminders": {
+    "title": "Recordatorios del equipo",
+    "diligence": {"title": "Trabaja con diligencia", "text": "Haz tu trabajo con mucha diligencia. Prioriza la calidad sobre la velocidad y comunica bloqueos pronto."},
+    "deadlines": {"title": "Respeta los plazos", "text": "Planifica con antelación, divide tareas en hitos e informa a las partes interesadas para cumplir fechas."},
+    "wellness": {"title": "Bienestar y equilibrio", "text": "Toma descansos regulares, hidrátate y mantén un equilibrio saludable entre trabajo y vida."}
+  },
+  "blog": {
+    "title": "Notas de la empresa",
+    "weekly": {"title": "Enfoque semanal", "text": "Prioriza tareas de alto impacto, colabora proactivamente y comparte avances en el standup."},
+    "culture": {"title": "Cultura de equipo", "text": "Apoya a tus compañeros y mantén un entorno amigable y constructivo."}
+  },
+  "music": {"now": "Reproduciendo ahora", "last": "Últimas reproducidas"},
+  "gallery": {"title": "Paraderos de empleados"},
+  "api": {"label": "URL de la API:", "button": "Usar API"}
+}

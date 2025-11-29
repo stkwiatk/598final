@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Roadie's Corner</title>
+  <title>Leisure Co.</title>
   <link rel="stylesheet" href="vibes.css">
   <!-- jQuery + jQuery UI CDN -->
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
@@ -13,12 +13,32 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
   <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
   <!-- Main JS -->
-  <script src="script.js" defer></script>
+  <script src="main.js" defer></script>
 </head>
 <body>
   <header>
-    <h1>Roadie's Corner</h1>
-    <p>Beep beep! A safe haven away from coyotes and a place for tunes.</p>
+    <div class="brand">
+      <img class="logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Simpleicons_Interface_business-man.svg/240px-Simpleicons_Interface_business-man.svg.png" alt="Leisure Co. Logo">
+      <div>
+        <h1 data-i18n="brand.title">Leisure Co.</h1>
+        <p data-i18n="brand.tagline">Company leisure page: music, reminders, and whereabouts.</p>
+      </div>
+    </div>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="#tips-accordion" data-i18n="nav.tips">Tips</a>
+      <a href="#blog" data-i18n="nav.blog">Blog</a>
+      <a href="#music" data-i18n="nav.music">Music</a>
+      <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
+    </nav>
+    <div class="lang-select">
+      <label for="lang" data-i18n="lang.label">Language:</label>
+      <select id="lang">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="hr">Hrvatski</option>
+        <option value="ja">日本語</option>
+      </select>
+    </div>
     <div class="theme-buttons" aria-label="Color Themes">
       <button class="theme-btn" data-color="red" type="button">Red</button>
       <button class="theme-btn" data-color="yellow" type="button">Yellow</button>
@@ -29,68 +49,69 @@
   <main>
     <!-- UI Widget Section -->
     <section class="widgets">
-      <h2>Roadie Tips</h2>
+      <h2 data-i18n="reminders.title">Team Reminders</h2>
       <div id="tips-accordion">
-        <h3>Escape Techniques</h3>
+        <h3 data-i18n="reminders.diligence.title">Work Diligently</h3>
         <div>
-          <p>Use switchbacks, dust clouds, and sudden stops to shake pursuers.</p>
+          <p data-i18n="reminders.diligence.text">Do your work very diligently. Focus on quality over speed and communicate blockers early.</p>
         </div>
-        <h3>Snack Preferences</h3>
+        <h3 data-i18n="reminders.deadlines.title">Respect Deadlines</h3>
         <div>
-          <p>Seeds and berries only. Avoid anything labeled ACME.</p>
+          <p data-i18n="reminders.deadlines.text">Plan ahead, break tasks into milestones, and keep stakeholders informed to meet delivery dates.</p>
         </div>
-        <h3>Desert Etiquette</h3>
+        <h3 data-i18n="reminders.wellness.title">Wellness & Balance</h3>
         <div>
-          <p>Always beep twice when passing friends and share shade.</p>
+          <p data-i18n="reminders.wellness.text">Take regular breaks, hydrate, and maintain a healthy work-life balance for sustained productivity.</p>
         </div>
       </div>
     </section>
 
     <!-- Blog Section -->
-    <section class="blog">
-      <h2>Anti-Coyote Blog</h2>
+    <section class="blog" id="blog">
+      <h2 data-i18n="blog.title">Company Notes</h2>
       <article>
-        <h3>How to Outsmart a Coyote</h3>
-        <p>Step one: speed. Step two: more speed. Step three: always check the label on ACME products…</p>
+        <h3 data-i18n="blog.weekly.title">Weekly Focus</h3>
+        <p data-i18n="blog.weekly.text">Prioritize high-impact tasks, collaborate proactively, and share progress updates during standup.</p>
       </article>
       <article>
-        <h3>Desert Survival Tips</h3>
-        <p>Hydrate, avoid anvils falling from the sky, and keep your wings stretched out for sudden sprints.</p>
+        <h3 data-i18n="blog.culture.title">Team Culture</h3>
+        <p data-i18n="blog.culture.text">Support peers and maintain a friendly, constructive environment.</p>
       </article>
     </section>
 
     <!-- Music Section -->
-    <section class="music">
-      <h2>Now jamming...</h2>
+    <section class="music" id="music">
+      <h2 data-i18n="music.now">Now Playing</h2>
       <div class="now-playing">
-        <img id="now-img" src="https://via.placeholder.com/150?text=Beep+Beep!" alt="Album Art">
+        <img id="now-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg" alt="Album Art">
         <div>
           <h3 id="now-title">Loading...</h3>
           <p id="now-artist"></p>
         </div>
       </div>
-      <h2>Last Played</h2>
+      <h2 data-i18n="music.last">Last Played</h2>
       <div class="last-played" id="last-played"></div>
     </section>
 
     <!-- Slideshow Section -->
-    <section class="slideshow">
-      <h2>Roadie Gallery</h2>
+    <section class="slideshow" id="gallery">
+      <h2 data-i18n="gallery.title">Employee Whereabouts</h2>
       <div class="carousel">
-        <div><img src="https://via.placeholder.com/600x300?text=Desert+Run+1" alt="Slide 1"></div>
-        <div><img src="https://via.placeholder.com/600x300?text=Desert+Run+2" alt="Slide 2"></div>
-        <div><img src="https://via.placeholder.com/600x300?text=Desert+Run+3" alt="Slide 3"></div>
+        <div><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Saguaro_National_Park_%2815517166060%29.jpg/640px-Saguaro_National_Park_%2815517166060%29.jpg" alt="Saguaro National Park"></div>
+        <div><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Monument_Valley_2.jpg/640px-Monument_Valley_2.jpg" alt="Monument Valley"></div>
+        <div><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Death_Valley_Sand_Dunes.jpg/640px-Death_Valley_Sand_Dunes.jpg" alt="Death Valley Sand Dunes"></div>
       </div>
     </section>
   </main>
 
   <footer>
-    <p>&copy; Roadie’s Corner</p>
+    <p>&copy; <span data-i18n="brand.title">Leisure Co.</span></p>
     <div class="prefs">
-      <label for="username">Your name:</label>
-      <input type="text" id="username" placeholder="Roadie fan" />
-      <button id="save-prefs">Save</button>
-      <span id="welcome"></span>
+      <div class="api-override">
+        <label for="api-override" data-i18n="api.label">API URL:</label>
+        <input type="url" id="api-override" placeholder="https://your-postman-mock.example" />
+        <button id="save-api" type="button" data-i18n="api.button">Use API</button>
+      </div>
     </div>
   </footer>
 

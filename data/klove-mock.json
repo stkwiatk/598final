@@ -1,0 +1,48 @@
+{
+  "nowPlaying": {
+    "songId": 184099,
+    "songTitle": "Let It Rise",
+    "artistId": 178849,
+    "artistName": "Big Daddy Weave",
+    "albumImageVariants": {
+      "small": "https://cdn.corpe.../music/103287.sm.png",
+      "medium": "https://cdn.corpe.../music/103287.md.png",
+      "large": "https://cdn.corpe.../music/103287.lg.png"
+    }
+  },
+  "lastPlayed": [
+    {
+      "songId": 183237,
+      "songTitle": "King Of Glory",
+      "artistId": 178768,
+      "artistName": "Third Day",
+      "albumImageVariants": {
+        "small": "https://cdn.corpe.../music/104907.sm.png",
+        "medium": "https://cdn.corpe.../music/104907.md.png",
+        "large": "https://cdn.corpe.../music/104907.lg.png"
+      }
+    },
+    {
+      "songId": 184586,
+      "songTitle": "Open Skies",
+      "artistId": 178920,
+      "artistName": "David Crowder Band",
+      "albumImageVariants": {
+        "small": "https://cdn.corpe.../music/16851.sm.jpg",
+        "medium": "https://cdn.corpe.../music/16851.md.jpg",
+        "large": "https://cdn.corpe.../music/16851.lg.jpg"
+      }
+    },
+    {
+      "songId": 184001,
+      "songTitle": "I Still Believe",
+      "artistId": 178500,
+      "artistName": "Jeremy Camp",
+      "albumImageVariants": {
+        "small": "https://via.placeholder.com/60",
+        "medium": "https://via.placeholder.com/100",
+        "large": "https://via.placeholder.com/150"
+      }
+    }
+  ]
+}
