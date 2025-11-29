@@ -4,6 +4,8 @@ $(function () {
   const nowTitleEl = $('#now-title');
   const nowArtistEl = $('#now-artist');
   const bodyEl = $('body');
+  const storageKeyLang = 'leisure_lang';
+  const storageKeyTheme = 'leisure_theme';
 
   function renderPrayerTimes(timings) {
     lastPlayedEl.empty();
@@ -75,7 +77,9 @@ $(function () {
     bodyEl.removeClass(function (idx, cls) {
       return (cls || '').split(' ').filter(c => c.startsWith('theme-')).join(' ');
     });
-    bodyEl.addClass(`theme-${color}-light`);
+    const cls = `theme-${color}-light`;
+    bodyEl.addClass(cls);
+    try { localStorage.setItem(storageKeyTheme, cls); } catch (e) { /* ignore */ }
   });
 
   // Simple i18n dictionary for visible text
@@ -190,10 +194,22 @@ $(function () {
 
   $('#lang').on('change', function () {
     const lang = $(this).val();
+    try { localStorage.setItem(storageKeyLang, lang); } catch (e) { /* ignore */ }
     applyLanguage(lang);
   });
 
   // Initialize default language
+  // Apply saved language (if any) and saved theme (if any)
+  try {
+    const savedLang = localStorage.getItem(storageKeyLang);
+    if (savedLang) $('#lang').val(savedLang);
+  } catch (e) { /* ignore */ }
+
+  try {
+    const savedTheme = localStorage.getItem(storageKeyTheme);
+    if (savedTheme) bodyEl.addClass(savedTheme);
+  } catch (e) { /* ignore */ }
+
   applyLanguage($('#lang').val() || 'en');
 
   fetchAladhan();
