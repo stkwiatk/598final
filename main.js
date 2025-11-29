@@ -29,48 +29,32 @@ $(function () {
     localStorage.setItem('rc_theme_mode', nextMode);
   });
 
-  const apiOverrideInput = $('#api-override');
-  const apiOverrideBtn = $('#save-api');
-  const storedApiOverride = localStorage.getItem('rc_api_override');
-  if (storedApiOverride) apiOverrideInput.val(storedApiOverride);
-  apiOverrideBtn.on('click', function () {
-    const url = (apiOverrideInput.val() || '').trim();
-    if (url) localStorage.setItem('rc_api_override', url); else localStorage.removeItem('rc_api_override');
-    fetchKLove(true);
-  });
+  // Removed API override UI for GitHub Pages simplicity
 
-  // Language switching (i18n)
+  // Language switching (inline dictionaries to avoid fetch issues on GitHub Pages)
   const langSelect = $('#lang');
-  const storedLang = localStorage.getItem('rc_lang') || 'en';
-  langSelect.val(storedLang);
-
+  const I18N = {
+    en: { brand:{title:'Leisure Co.',tagline:'Company leisure page: music, reminders, and whereabouts.'}, nav:{tips:'Tips',blog:'Blog',music:'Music',gallery:'Gallery'}, lang:{label:'Language:'}, reminders:{ title:'Team Reminders', diligence:{title:'Work Diligently',text:'Do your work very diligently. Focus on quality over speed and communicate blockers early.'}, deadlines:{title:'Respect Deadlines',text:'Plan ahead, break tasks into milestones, and keep stakeholders informed to meet delivery dates.'}, wellness:{title:'Wellness & Balance',text:'Take regular breaks, hydrate, and maintain a healthy work-life balance for sustained productivity.'}}, blog:{ title:'Company Notes', weekly:{title:'Weekly Focus',text:'Prioritize high-impact tasks, collaborate proactively, and share progress updates during standup.'}, culture:{title:'Team Culture',text:'Support peers and maintain a friendly, constructive environment.'}}, music:{now:'Now Playing',last:'Last Played'}, gallery:{title:'Employee Whereabouts'}, api:{label:'API URL:',button:'Use API'} },
+    es: { brand:{title:'Leisure Co.',tagline:'Página de ocio de la empresa: música, recordatorios y paraderos.'}, nav:{tips:'Consejos',blog:'Blog',music:'Música',gallery:'Galería'}, lang:{label:'Idioma:'}, reminders:{ title:'Recordatorios del equipo', diligence:{title:'Trabaja con diligencia',text:'Haz tu trabajo con mucha diligencia. Prioriza la calidad sobre la velocidad y comunica bloqueos pronto.'}, deadlines:{title:'Respeta los plazos',text:'Planifica con antelación, divide tareas en hitos e informa a las partes interesadas para cumplir fechas.'}, wellness:{title:'Bienestar y equilibrio',text:'Toma descansos regulares, hidrátate y mantén un equilibrio saludable entre trabajo y vida.'}}, blog:{ title:'Notas de la empresa', weekly:{title:'Enfoque semanal',text:'Prioriza tareas de alto impacto, colabora proactivamente y comparte avances en el standup.'}, culture:{title:'Cultura de equipo',text:'Apoya a tus compañeros y mantén un entorno amigable y constructivo.'}}, music:{now:'Reproduciendo ahora',last:'Últimas reproducidas'}, gallery:{title:'Paraderos de empleados'}, api:{label:'URL de la API:',button:'Usar API'} },
+    hr: { brand:{title:'Leisure Co.',tagline:'Stranica za slobodno vrijeme: glazba, podsjetnici i lokacije.'}, nav:{tips:'Savjeti',blog:'Blog',music:'Glazba',gallery:'Galerija'}, lang:{label:'Jezik:'}, reminders:{ title:'Tim podsjetnici', diligence:{title:'Radite marljivo',text:'Radite vrlo marljivo. Dajte prednost kvaliteti nad brzinom i rano komunicirajte blokade.'}, deadlines:{title:'Poštujte rokove',text:'Planirajte unaprijed, podijelite zadatke na prekretnice i obavještavajte dionike kako biste ispunili rokove.'}, wellness:{title:'Zdravlje i ravnoteža',text:'Uzimajte redovite pauze, hidrirajte se i održavajte zdravu ravnotežu između posla i života.'}}, blog:{ title:'Bilješke tvrtke', weekly:{title:'Tjedni fokus',text:'Prioritet dajte zadacima velikog utjecaja, surađujte proaktivno i dijelite napredak na dnevnim sastancima.'}, culture:{title:'Tim kultura',text:'Podržavajte kolege i održavajte prijateljsko, konstruktivno okruženje.'}}, music:{now:'Sada svira',last:'Zadnje reproducirano'}, gallery:{title:'Lokacije zaposlenika'}, api:{label:'API URL:',button:'Koristi API'} },
+    ja: { brand:{title:'Leisure Co.',tagline:'会社のレジャーページ：音楽、リマインダー、所在情報。'}, nav:{tips:'ヒント',blog:'ブログ',music:'音楽',gallery:'ギャラリー'}, lang:{label:'言語:'}, reminders:{ title:'チームのリマインダー', diligence:{title:'勤勉に働く',text:'非常に勤勉に仕事をしましょう。速度より品質を重視し、課題は早めに共有します。'}, deadlines:{title:'締め切りを守る',text:'事前に計画し、タスクをマイルストーンに分割し、関係者に情報共有して締め切りを守ります。'}, wellness:{title:'健康とバランス',text:'定期的に休憩を取り、水分補給をし、健全なワークライフバランスを保ちましょう。'}}, blog:{ title:'会社ノート', weekly:{title:'今週の注力',text:'影響の大きいタスクを優先し、積極的に協力し、スタンドアップで進捗を共有します。'}, culture:{title:'チーム文化',text:'仲間を支援し、友好的で建設的な環境を維持します。'}}, music:{now:'再生中',last:'最近再生'}, gallery:{title:'従業員の所在'}, api:{label:'API URL:',button:'APIを使用'} }
+  };
   function applyTranslations(dict) {
     $('[data-i18n]').each(function () {
       const key = $(this).data('i18n');
       const parts = key.split('.');
       let cur = dict;
-      for (let p of parts) {
-        if (cur && typeof cur === 'object' && p in cur) cur = cur[p]; else { cur = null; break; }
-      }
-      if (typeof cur === 'string') {
-        $(this).text(cur);
-      }
+      for (let p of parts) { if (cur && typeof cur === 'object' && p in cur) cur = cur[p]; else { cur = null; break; } }
+      if (typeof cur === 'string') $(this).text(cur);
     });
   }
-
-  function loadLang(code) {
-    const url = `./data/i18n/${code}.json`;
-    return fetch(url)
-      .then(r => { if (!r.ok) throw new Error('lang not found'); return r.json(); })
-      .then(applyTranslations)
-      .catch(() => {});
-  }
-
-  loadLang(storedLang);
+  const storedLang = localStorage.getItem('rc_lang') || 'en';
+  langSelect.val(storedLang);
+  applyTranslations(I18N[storedLang] || I18N.en);
   langSelect.on('change', function () {
     const code = $(this).val();
     localStorage.setItem('rc_lang', code);
-    loadLang(code);
+    applyTranslations(I18N[code] || I18N.en);
   });
 
   const lastPlayedEl = $('#last-played');
@@ -126,6 +110,8 @@ $(function () {
     }
     const override = getOverride();
     const chain = [];
+    // Prefer mock on GitHub Pages to ensure content loads
+    chain.push(mockUrl);
     if (override) chain.push(override);
     chain.push(
       proxyUrl,
@@ -134,7 +120,7 @@ $(function () {
       'https://api.allorigins.win/raw?url=' + encodeURIComponent(liveUrl),
       'https://cors.isomorphic-git.org/' + liveUrl,
       'https://thingproxy.freeboard.io/fetch/' + liveUrl,
-      mockUrl
+      // mock already first
     );
     (function next(i) {
       if (i >= chain.length) { nowTitleEl.text('Error loading K-Love'); return; }

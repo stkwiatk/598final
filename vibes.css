@@ -69,14 +69,15 @@ header {
   gap: 1rem;
 }
 .site-nav a {
-  color: #fff;
-  font-weight: 600;
+  color: #111;
+  font-weight: 700;
   text-decoration: none;
-  padding: 0.3rem 0.6rem;
+  padding: 0.35rem 0.7rem;
   border-radius: 6px;
-  background: rgba(255,255,255,0.15);
+  background: #fff;
+  box-shadow: 0 1px 3px var(--shadow);
 }
-.site-nav a:hover { background: rgba(255,255,255,0.25); }
+.site-nav a:hover { background: #f8f8f8; }
 
 /* Language selector */
 .lang-select {
@@ -87,6 +88,9 @@ header {
   align-items: center;
   gap: 0.4rem;
   color: #fff;
+  background: rgba(0,0,0,0.2);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
 }
 .lang-select select {
   padding: 0.25rem 0.5rem;
@@ -123,8 +127,8 @@ main {
 .now-playing { background: var(--sand); }
 .now-playing img { border-color: var(--sunset); }
 .last-track { box-shadow: 0 2px 5px var(--shadow); }
-.site-nav a { background: color-mix(in oklab, var(--sunset) 20%, white); }
-.theme-btn { background: color-mix(in oklab, var(--sky) 25%, white); }
+.site-nav a { border: 2px solid var(--sunset); }
+.theme-btn { background: #ffffffcc; }
 
 .blog, .music {
   flex: 1 1 400px;
