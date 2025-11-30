@@ -367,10 +367,19 @@ $(function () {
     setTimeout(function(){ ensureSlick(attempt+1); }, 50);
   })();
 
-  // Enhance K-LOVE fetch with retry + clearer status
+  // Enhance K-LOVE fetch with retry + clearer status + auto-refresh every minute
   (function enhanceKLove(){
     let attempts = 0;
     const maxAttempts = 3;
+
+    function scheduleRefresh() {
+      // Auto-refresh every 60 seconds
+      setTimeout(function() {
+        attempts = 0; // reset attempts for the new cycle
+        run();
+      }, 60000);
+    }
+
     function run(){
       attempts++;
       fetchKLoveNowPlaying();
@@ -381,9 +390,14 @@ $(function () {
           run();
         } else if (nowTitleEl.text().trim().match(/^Loading/i)) {
           nowTitleEl.text('K-LOVE unavailable (CORS?)');
+          scheduleRefresh();
+        } else {
+          // Successful load (or at least not stuck on Loading) – schedule next refresh
+          scheduleRefresh();
         }
       }, 4000);
     }
+
     run();
   })();
 
