@@ -7,14 +7,20 @@ $(function () {
   const storageKeyLang = 'leisure_lang';
   const storageKeyTheme = 'leisure_theme';
 
+  // Fetch K-LOVE via CORS proxy so GitHub Pages can reach it
   function fetchKLoveNowPlaying() {
-    const url = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
+    const directUrl = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
     nowTitleEl.text('Loading…');
-    fetch(url)
-      .then(r => {
+
+    function fetchVia(url) {
+      return fetch(url).then(r => {
         if (!r.ok) throw new Error('Network');
         return r.json();
-      })
+      });
+    }
+
+    fetchVia(proxyUrl)
       .then(data => {
         const current = data.nowPlaying || {};
         const title = current.songTitle || 'Unknown Title';
@@ -37,13 +43,13 @@ $(function () {
             const pTitle = item.songTitle || 'Unknown Title';
             const pArtist = item.artistName || '';
             const pVariants = item.albumImageVariants || {};
-            const pMedium = pVariants.medium || item.albumImageUrl || '';
+            const primary = pVariants.medium || pVariants.large || pVariants.small || item.albumImageUrl || '';
             const pAlt = item.albumImageAltText || `${pTitle} — ${pArtist}`;
-            const imgSrc = pMedium || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
 
-            const $img = $('<img>').attr({ src: imgSrc, alt: pAlt });
-            $img.on('error', function(){
-              $(this).attr('src','https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
+            const $img = $('<img>').attr({ src: primary, alt: pAlt });
+            $img.on('error', function () {
+              const fallback = pVariants.large || pVariants.small || item.albumImageUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
+              $(this).attr('src', fallback);
             });
 
             const el = $('<div class="last-track">');
@@ -60,9 +66,57 @@ $(function () {
         }
       })
       .catch(err => {
-        nowTitleEl.text('Error loading K-LOVE');
-        nowArtistEl.text('');
-        console.warn('K-LOVE fetch failed:', err);
+        console.warn('K-LOVE proxy fetch failed, trying direct:', err);
+        return fetchVia(directUrl)
+          .then(data => {
+            const current = data.nowPlaying || {};
+            const title = current.songTitle || 'Unknown Title';
+            const artist = current.artistName || 'Unknown Artist';
+
+            const albumVariants = current.albumImageVariants || {};
+            const albumLarge = albumVariants.large || current.albumImageUrl || '';
+            const albumAlt = current.albumImageAltText || `${title} — ${artist}`;
+
+            if (albumLarge) {
+              nowImgEl.attr({ src: albumLarge, alt: albumAlt });
+            }
+            nowTitleEl.text(title);
+            nowArtistEl.text(artist);
+
+            const prev = Array.isArray(data.lastPlayed) ? data.lastPlayed : [];
+            lastPlayedEl.empty();
+            if (prev.length) {
+              prev.slice(0, 4).forEach(item => {
+                const pTitle = item.songTitle || 'Unknown Title';
+                const pArtist = item.artistName || '';
+                const pVariants = item.albumImageVariants || {};
+                const primary = pVariants.medium || pVariants.large || pVariants.small || item.albumImageUrl || '';
+                const pAlt = item.albumImageAltText || `${pTitle} — ${pArtist}`;
+
+                const $img = $('<img>').attr({ src: primary, alt: pAlt });
+                $img.on('error', function () {
+                  const fallback = pVariants.large || pVariants.small || item.albumImageUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
+                  $(this).attr('src', fallback);
+                });
+
+                const el = $('<div class="last-track">');
+                el.append($img);
+                el.append(
+                  $('<div>')
+                    .append($('<strong>').text(pTitle))
+                    .append($('<span>').text(pArtist))
+                );
+                lastPlayedEl.append(el);
+              });
+            } else {
+              lastPlayedEl.append($('<div class="last-track">').append($('<span>').text('No recent songs')));
+            }
+          })
+          .catch(finalErr => {
+            nowTitleEl.text('Error loading K-LOVE');
+            nowArtistEl.text('');
+            console.warn('K-LOVE fetch failed (proxy and direct):', finalErr);
+          });
       });
   }
 
