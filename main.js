@@ -30,8 +30,14 @@ $(function () {
         const albumLarge = albumVariants.large || current.albumImageUrl || '';
         const albumAlt = current.albumImageAltText || `${title} — ${artist}`;
 
+        console.log('[K-LOVE] NowPlaying image URL:', albumLarge, 'alt:', albumAlt);
         if (albumLarge) {
           nowImgEl.attr({ src: albumLarge, alt: albumAlt });
+        } else {
+          nowImgEl.attr({
+            src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg',
+            alt: albumAlt
+          });
         }
         nowTitleEl.text(title);
         nowArtistEl.text(artist);
@@ -46,11 +52,8 @@ $(function () {
             const primary = pVariants.medium || pVariants.large || pVariants.small || item.albumImageUrl || '';
             const pAlt = item.albumImageAltText || `${pTitle} — ${pArtist}`;
 
-            const $img = $('<img>').attr({ src: primary, alt: pAlt });
-            $img.on('error', function () {
-              const fallback = pVariants.large || pVariants.small || item.albumImageUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
-              $(this).attr('src', fallback);
-            });
+            console.log('[K-LOVE] LastPlayed image URL:', primary, 'alt:', pAlt);
+            const $img = $('<img>').attr({ src: primary || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: pAlt });
 
             const el = $('<div class="last-track">');
             el.append($img);
@@ -95,6 +98,14 @@ $(function () {
 
                 const $img = $('<img>').attr({ src: primary, alt: pAlt });
                 $img.on('error', function () {
+                  const tried = $(this).data('tried') || 0;
+                  if (tried > 1) {
+                    $(this)
+                      .off('error')
+                      .attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
+                    return;
+                  }
+                  $(this).data('tried', tried + 1);
                   const fallback = pVariants.large || pVariants.small || item.albumImageUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
                   $(this).attr('src', fallback);
                 });
@@ -377,14 +388,10 @@ $(function () {
   })();
 
   // Image onerror fallback for current track
-  nowImgEl.on('error', function(){
-    const src = $(this).attr('src');
-    if (src && src.includes('.lg.')) {
-      $(this).attr('src', src.replace('.lg.', '.')); // try base
-    } else {
-      $(this).attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
-    }
-  });
+    nowImgEl.on('error', function(){
+      const src = $(this).attr('src');
+      console.warn('[K-LOVE] NowPlaying image failed to load:', src);
+    });
 
   // remove enhanced wrapper, basic fetch already called above
 

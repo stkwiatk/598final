@@ -9,7 +9,7 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Baloo 2', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   margin: 0;
   padding: 0;
   background: var(--sand);
@@ -188,12 +188,12 @@ main {
 
 
 /* Theme color application across key components */
-.blog h2, .prayer h2, .slideshow h2 { color: var(--sunset); }
-.now-playing { background: var(--sand); }
+.blog h2, .prayer h2, .slideshow h2, .quran h2 { color: var(--sunset); }
+.now-playing { background: #fffdf7; }
 .now-playing img { border-color: var(--sunset); }
 .last-track { box-shadow: 0 2px 5px var(--shadow); }
 .site-nav a { border: 2px solid var(--sunset); }
-.theme-btn { background: #ffffffcc; }
+.theme-btn { background: #ffffffdd; }
 
 .blog, .prayer {
   flex: 1 1 400px;
@@ -401,32 +401,35 @@ body[class*="theme-"] {
 
 /* RED Light/Dark */
 body.theme-red-light { --sunset:#ff4d4d; --sky:#ff9966; background:#fff5f5; }
-body.theme-red-dark { --sunset:#ff4d4d; --sky:#b23a48; background:#2a0e0e; color:#f5eaea; }
+body.theme-red-dark { --sunset:#ff6b6b; --sky:#b23a48; background:#1a0505; color:#fceaea; }
 
 /* YELLOW Light/Dark */
 body.theme-yellow-light { --sunset:#fdd835; --sky:#ffec99; background:#fffce8; }
-body.theme-yellow-dark { --sunset:#fdd835; --sky:#b19700; background:#2a2a00; color:#f8f4d2; }
+body.theme-yellow-dark { --sunset:#ffeb3b; --sky:#b19700; background:#151500; color:#fffde7; }
 
 /* BLUE Light/Dark */
 body.theme-blue-light { --sunset:#1e88e5; --sky:#64b5f6; background:#e6f3ff; }
-body.theme-blue-dark { --sunset:#1e88e5; --sky:#0d47a1; background:#0d2233; color:#d5e9f8; }
+body.theme-blue-dark { --sunset:#42a5f5; --sky:#0d47a1; background:#050f1a; color:#e3f2fd; }
 
 /* Adjust common blocks for dark variants (inherit color) */
 body.theme-red-dark .blog,
 body.theme-red-dark .prayer,
 body.theme-red-dark .widgets,
+body.theme-red-dark .quran,
 body.theme-red-dark .slideshow .carousel .slick-slide div,
 body.theme-red-dark .now-playing,
 body.theme-red-dark .last-track,
 body.theme-yellow-dark .blog,
 body.theme-yellow-dark .prayer,
 body.theme-yellow-dark .widgets,
+body.theme-yellow-dark .quran,
 body.theme-yellow-dark .slideshow .carousel .slick-slide div,
 body.theme-yellow-dark .now-playing,
 body.theme-yellow-dark .last-track,
 body.theme-blue-dark .blog,
 body.theme-blue-dark .prayer,
 body.theme-blue-dark .widgets,
+body.theme-blue-dark .quran,
 body.theme-blue-dark .slideshow .carousel .slick-slide div,
 body.theme-blue-dark .now-playing,
 body.theme-blue-dark .last-track {
