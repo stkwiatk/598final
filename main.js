@@ -8,11 +8,12 @@ $(function () {
   const storageKeyLang = 'leisure_lang';
   const storageKeyTheme = 'leisure_theme';
 
-  // Fetch K-LOVE via CORS proxy so GitHub Pages can reach it
+  // Fetch K-LOVE via CORS proxy and show title, artist, and album alt text
   function fetchKLoveNowPlaying() {
     const directUrl = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
     const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
     nowTitleEl.text('Loading…');
+    nowArtistEl.text('');
 
     function fetchVia(url) {
       return fetch(url).then(r => {
@@ -21,64 +22,53 @@ $(function () {
       });
     }
 
+    function applyPayload(data) {
+      const current = data && data.nowPlaying ? data.nowPlaying : {};
+      const title = current.songTitle || 'Unknown title';
+      const artist = current.artistName || 'Unknown artist';
+      const albumAlt = current.albumImageAltText || `${title} — ${artist}`;
+
+      nowTitleEl.text(title);
+      nowArtistEl.text(`${artist} — ${albumAlt}`);
+
+      const prev = Array.isArray(data && data.lastPlayed ? data.lastPlayed : [])
+        ? data.lastPlayed
+        : [];
+      lastPlayedEl.empty();
+      if (prev.length) {
+        prev.slice(0, 4).forEach(item => {
+          const pTitle = item.songTitle || 'Unknown title';
+          const pArtist = item.artistName || 'Unknown artist';
+          const pAlbumAlt = item.albumImageAltText || `${pTitle} — ${pArtist}`;
+
+          const el = $('<div class="last-track">');
+          el.append(
+            $('<div>')
+              .append($('<strong>').text(pTitle))
+              .append($('<span>').text(`${pArtist} — ${pAlbumAlt}`))
+          );
+          lastPlayedEl.append(el);
+        });
+      } else {
+        lastPlayedEl.append(
+          $('<div class="last-track">').append(
+            $('<span>').text('No recent songs')
+          )
+        );
+      }
+    }
+
     fetchVia(proxyUrl)
-      .then(data => {
-        const current = data.nowPlaying || {};
-        const title = current.songTitle || 'Unknown Title';
-        const artist = current.artistName || 'Unknown Artist';
-
-        nowTitleEl.text(title);
-        nowArtistEl.text(artist);
-
-        const prev = Array.isArray(data.lastPlayed) ? data.lastPlayed : [];
-        lastPlayedEl.empty();
-        if (prev.length) {
-          prev.slice(0, 4).forEach(item => {
-            const pTitle = item.songTitle || 'Unknown Title';
-            const el = $('<div class="last-track">');
-            el.append(
-              $('<div>')
-                .append($('<strong>').text(pTitle))
-                .append($('<span>').text(pArtist))
-            );
-            lastPlayedEl.append(el);
-          });
-        } else {
-          lastPlayedEl.append($('<div class="last-track">').append($('<span>').text('No recent songs')));
-        }
-      })
+      .then(applyPayload)
       .catch(err => {
         console.warn('K-LOVE proxy fetch failed, trying direct:', err);
         return fetchVia(directUrl)
-          .then(data => {
-            const current = data.nowPlaying || {};
-            const title = current.songTitle || 'Unknown Title';
-            const artist = current.artistName || 'Unknown Artist';
-
-            nowTitleEl.text(title);
-            nowArtistEl.text(artist);
-
-            const prev = Array.isArray(data.lastPlayed) ? data.lastPlayed : [];
-            lastPlayedEl.empty();
-            if (prev.length) {
-              prev.slice(0, 4).forEach(item => {
-                const pTitle = item.songTitle || 'Unknown Title';
-                const el = $('<div class="last-track">');
-                el.append(
-                  $('<div>')
-                    .append($('<strong>').text(pTitle))
-                    .append($('<span>').text(pArtist))
-                );
-                lastPlayedEl.append(el);
-              });
-            } else {
-              lastPlayedEl.append($('<div class="last-track">').append($('<span>').text('No recent songs')));
-            }
-          })
+          .then(applyPayload)
           .catch(finalErr => {
-            nowTitleEl.text('Error loading K-LOVE');
+            nowTitleEl.text('K-LOVE unavailable');
             nowArtistEl.text('');
             console.warn('K-LOVE fetch failed (proxy and direct):', finalErr);
+            lastPlayedEl.empty();
           });
       });
   }
@@ -304,7 +294,7 @@ $(function () {
           console.warn('Retrying K-LOVE fetch attempt', attempts+1);
           run();
         } else if (nowTitleEl.text().trim().match(/^Loading/i)) {
-          nowTitleEl.text('K-LOVE unavailable (CORS?)');
+          nowTitleEl.text('K-LOVE unavailable');
           scheduleRefresh();
         } else {
           // Successful load (or at least not stuck on Loading) – schedule next refresh
