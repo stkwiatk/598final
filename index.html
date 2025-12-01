@@ -63,8 +63,8 @@
       <label for="lang" data-i18n="lang.label">Language:</label>
       <select id="lang">
         <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="hr">Hrvatski</option>
+        <option value="es">En español</option>
+        <option value="hr">Na hrvatskom</option>
         <option value="ja">日本語</option>
       </select>
     </div>
@@ -110,35 +110,30 @@
 
     <!-- Music / Now Playing Section -->
     <section class="prayer" id="music">
-      <h2 data-i18n="music.now">Now Playing</h2>
-      <div class="now-playing">
-        <img id="now-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg" alt="Album Art">
-        <div>
-          <h3 id="now-title">Loading...</h3>
-          <p id="now-artist"></p>
+      <div class="music-layout">
+        <div class="music-now">
+          <h2 data-i18n="music.now">Now Playing</h2>
+          <div class="now-playing">
+            <h3 id="now-title">Loading...</h3>
+            <p id="now-artist"></p>
+          </div>
+        </div>
+        <div class="music-last">
+          <h2 data-i18n="music.last">Recent Songs</h2>
+          <div class="last-played" id="last-played"></div>
         </div>
       </div>
-      <h2 data-i18n="music.last">Recent Songs</h2>
-      <div class="last-played" id="last-played"></div>
     </section>
 
-    <!-- Slideshow / Carousel Section (move above Quran) -->
+    <!-- Slideshow / Carousel Section -->
     <section class="slideshow" id="gallery">
       <h2 data-i18n="gallery.title">Employee Whereabouts</h2>
       <div class="carousel">
-        <div><img src="assets/IMG_7421.jpg" alt="A grey jeep truck on red desert sand"></div>
-        <div><img src="assets/IMG_7441.jpg" alt="A giant fountain in the middle of a manmade lake"></div>
-        <div><img src="assets/IMG_8284.jpg" alt="A log flume ride"></div>
-        <div><img src="assets/IMG_8319.jpg" alt="Plush seagulls with fake fries hanging out their mouth"></div>
-        <div><img src="assets/IMG_9897.JPG" alt="An assemblage of plush coyotes in a gift shop"></div>
-      </div>
-    </section>
-
-    <!-- Quran Section (now below slideshow) -->
-    <section class="quran" id="quran">
-      <h2 data-i18n="quran.title">Quran  Surah 113</h2>
-      <div class="quran-content">
-        <!-- Filled dynamically by main.js (fetchAlQuranSurah appends into #last-played for now) -->
+        <div><img src="https://stkwiatk.github.io/598final/assets/IMG_7421.jpg" alt="A grey jeep truck on red desert sand"></div>
+        <div><img src="https://stkwiatk.github.io/598final/assets/IMG_7441.jpg" alt="A giant fountain in the middle of a manmade lake"></div>
+        <div><img src="https://stkwiatk.github.io/598final/assets/IMG_8284.jpg" alt="A log flume ride"></div>
+        <div><img src="https://stkwiatk.github.io/598final/assets/IMG_8319.jpg" alt="Plush seagulls with fake fries hanging out their mouth"></div>
+        <div><img src="https://stkwiatk.github.io/598final/assets/IMG_9897.JPG" alt="An assemblage of plush coyotes in a gift shop"></div>
       </div>
     </section>
 

@@ -1,6 +1,7 @@
+"use strict";
+
 $(function () {
   const lastPlayedEl = $('#last-played');
-  const nowImgEl = $('#now-img');
   const nowTitleEl = $('#now-title');
   const nowArtistEl = $('#now-artist');
   const bodyEl = $('body');
@@ -26,19 +27,6 @@ $(function () {
         const title = current.songTitle || 'Unknown Title';
         const artist = current.artistName || 'Unknown Artist';
 
-        const albumVariants = current.albumImageVariants || {};
-        const albumLarge = albumVariants.large || current.albumImageUrl || '';
-        const albumAlt = current.albumImageAltText || `${title} — ${artist}`;
-
-        console.log('[K-LOVE] NowPlaying image URL:', albumLarge, 'alt:', albumAlt);
-        if (albumLarge) {
-          nowImgEl.attr({ src: albumLarge, alt: albumAlt });
-        } else {
-          nowImgEl.attr({
-            src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg',
-            alt: albumAlt
-          });
-        }
         nowTitleEl.text(title);
         nowArtistEl.text(artist);
 
@@ -47,16 +35,7 @@ $(function () {
         if (prev.length) {
           prev.slice(0, 4).forEach(item => {
             const pTitle = item.songTitle || 'Unknown Title';
-            const pArtist = item.artistName || '';
-            const pVariants = item.albumImageVariants || {};
-            const primary = pVariants.medium || pVariants.large || pVariants.small || item.albumImageUrl || '';
-            const pAlt = item.albumImageAltText || `${pTitle} — ${pArtist}`;
-
-            console.log('[K-LOVE] LastPlayed image URL:', primary, 'alt:', pAlt);
-            const $img = $('<img>').attr({ src: primary || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg', alt: pAlt });
-
             const el = $('<div class="last-track">');
-            el.append($img);
             el.append(
               $('<div>')
                 .append($('<strong>').text(pTitle))
@@ -76,13 +55,6 @@ $(function () {
             const title = current.songTitle || 'Unknown Title';
             const artist = current.artistName || 'Unknown Artist';
 
-            const albumVariants = current.albumImageVariants || {};
-            const albumLarge = albumVariants.large || current.albumImageUrl || '';
-            const albumAlt = current.albumImageAltText || `${title} — ${artist}`;
-
-            if (albumLarge) {
-              nowImgEl.attr({ src: albumLarge, alt: albumAlt });
-            }
             nowTitleEl.text(title);
             nowArtistEl.text(artist);
 
@@ -91,27 +63,7 @@ $(function () {
             if (prev.length) {
               prev.slice(0, 4).forEach(item => {
                 const pTitle = item.songTitle || 'Unknown Title';
-                const pArtist = item.artistName || '';
-                const pVariants = item.albumImageVariants || {};
-                const primary = pVariants.medium || pVariants.large || pVariants.small || item.albumImageUrl || '';
-                const pAlt = item.albumImageAltText || `${pTitle} — ${pArtist}`;
-
-                const $img = $('<img>').attr({ src: primary, alt: pAlt });
-                $img.on('error', function () {
-                  const tried = $(this).data('tried') || 0;
-                  if (tried > 1) {
-                    $(this)
-                      .off('error')
-                      .attr('src', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg');
-                    return;
-                  }
-                  $(this).data('tried', tried + 1);
-                  const fallback = pVariants.large || pVariants.small || item.albumImageUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Vinyl_record.jpg/240px-Vinyl_record.jpg';
-                  $(this).attr('src', fallback);
-                });
-
                 const el = $('<div class="last-track">');
-                el.append($img);
                 el.append(
                   $('<div>')
                     .append($('<strong>').text(pTitle))
@@ -316,43 +268,6 @@ $(function () {
 
   fetchKLoveNowPlaying();
 
-  // Also fetch AlQuran Surah 113 (Al-Falaq) and render a short excerpt
-  function fetchAlQuranSurah() {
-    const url = 'https://api.alquran.cloud/v1/surah/113';
-    fetch(url)
-      .then(r => r.json())
-      .then(json => {
-        if (!json || json.status !== 'OK' || !json.data) return;
-        const surah = json.data;
-        const title = (surah.englishName || surah.name || 'Surah 113') + ' — ' + (surah.englishNameTranslation || '');
-        const verses = Array.isArray(surah.ayahs) ? surah.ayahs.slice(0, 5) : [];
-
-        const block = $('<div class="last-track">');
-        block.append($('<img>').attr({
-          src: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Quran_Koran.svg',
-          alt: 'Quran'
-        }));
-        const textWrap = $('<div>');
-        textWrap.append($('<strong>').text(title.trim()));
-        if (verses.length) {
-          const snippet = verses.map(v => v.text).join(' ');
-          textWrap.append($('<span>').text(snippet));
-        }
-        block.append(textWrap);
-        const quranContainer = $('#quran .quran-content');
-        if (quranContainer.length) {
-          quranContainer.empty().append(block);
-        } else {
-          // Fallback to lastPlayed if quran section is missing
-          lastPlayedEl.append(block);
-        }
-      })
-      .catch(() => {
-        // Silent failure: keep UI tidy
-      });
-  }
-  fetchAlQuranSurah();
-
   // Slick fallback loader if primary failed (e.g., blocked CDN)
   (function ensureSlick(attempt){
     attempt = attempt || 0;
@@ -401,42 +316,4 @@ $(function () {
     run();
   })();
 
-  // Image onerror fallback for current track
-    nowImgEl.on('error', function(){
-      const src = $(this).attr('src');
-      console.warn('[K-LOVE] NowPlaying image failed to load:', src);
-    });
-
-  // remove enhanced wrapper, basic fetch already called above
-
-  // --- Surah retry & error message ---
-  function fetchAlQuranSurahRetry(attempt){
-    attempt = attempt || 0;
-    const max = 2;
-    const url = 'https://api.alquran.cloud/v1/surah/113';
-    return fetch(url)
-      .then(r => r.json())
-      .then(json => {
-        if (!json || json.status !== 'OK' || !json.data) throw new Error('Unexpected response');
-        const surah = json.data;
-        const title = (surah.englishName || surah.name || 'Surah 113') + ' — ' + (surah.englishNameTranslation || '');
-        const verses = Array.isArray(surah.ayahs) ? surah.ayahs.slice(0,5) : [];
-        const block = $('<div class="last-track">');
-        block.append($('<img>').attr({ src: 'https://upload.wikimedia.org/wikipedia/commons/6/6b/Quran_Koran.svg', alt: 'Quran' }));
-        const textWrap = $('<div>');
-        textWrap.append($('<strong>').text(title.trim()));
-        if (verses.length) {
-          const snippet = verses.map(v => v.text).join(' ');
-          textWrap.append($('<span>').text(snippet));
-        }
-        block.append(textWrap);
-        $('#quran .quran-content').empty().append(block);
-      })
-      .catch(err => {
-        console.warn('[Quran] Fetch failed attempt', attempt+1, err);
-        if (attempt < max) return fetchAlQuranSurahRetry(attempt+1);
-        $('#quran .quran-content').html('<div class="error">Surah unavailable</div>');
-      });
-  }
-  fetchAlQuranSurahRetry();
 });
