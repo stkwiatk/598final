@@ -8,7 +8,6 @@ $(function () {
   const storageKeyLang = 'leisure_lang';
   const storageKeyTheme = 'leisure_theme';
 
-  // Fetch K-LOVE via CORS proxy and show title, artist, and album alt text
   function fetchKLoveNowPlaying() {
     const directUrl = 'https://www.klove.com/api/music/nowPlaying?channelId=18&streamId=1291';
     const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(directUrl);
@@ -100,10 +99,9 @@ $(function () {
       setTimeout(initCarousel, 200);
     }
   }
-  // Defer first attempt slightly so fallback loader can engage if needed
+
   setTimeout(initCarousel, 100);
 
-  // Theme color buttons (red / yellow / blue) toggle light/dark for that color
   $('.theme-btn').on('click', function () {
     const color = $(this).data('color');
     const classes = (bodyEl.attr('class') || '').split(/\s+/);
@@ -122,7 +120,6 @@ $(function () {
     try { localStorage.setItem(storageKeyTheme, nextClass); } catch (e) { /* ignore */ }
   });
 
-  // Simple i18n dictionary for visible text
   const messages = {
     en: {
       'brand.title': 'Leisure Co.',
@@ -242,8 +239,7 @@ $(function () {
     applyLanguage(lang);
   });
 
-  // Initialize default language
-  // Apply saved language (if any) and saved theme (if any)
+
   try {
     const savedLang = localStorage.getItem(storageKeyLang);
     if (savedLang) $('#lang').val(savedLang);
@@ -258,7 +254,6 @@ $(function () {
 
   fetchKLoveNowPlaying();
 
-  // Slick fallback loader if primary failed (e.g., blocked CDN)
   (function ensureSlick(attempt){
     attempt = attempt || 0;
     if ($.fn && $.fn.slick) return; // already loaded
@@ -272,13 +267,11 @@ $(function () {
     setTimeout(function(){ ensureSlick(attempt+1); }, 50);
   })();
 
-  // Enhance K-LOVE fetch with retry + clearer status + auto-refresh every minute
   (function enhanceKLove(){
     let attempts = 0;
     const maxAttempts = 3;
 
     function scheduleRefresh() {
-      // Auto-refresh every 60 seconds
       setTimeout(function() {
         attempts = 0; // reset attempts for the new cycle
         run();
@@ -288,7 +281,7 @@ $(function () {
     function run(){
       attempts++;
       fetchKLoveNowPlaying();
-      // If still showing Loading after 4s, retry (possible CORS stall)
+      
       setTimeout(function(){
         if (nowTitleEl.text().trim().match(/^Loading/i) && attempts < maxAttempts){
           console.warn('Retrying K-LOVE fetch attempt', attempts+1);
@@ -297,7 +290,7 @@ $(function () {
           nowTitleEl.text('K-LOVE unavailable');
           scheduleRefresh();
         } else {
-          // Successful load (or at least not stuck on Loading) – schedule next refresh
+          
           scheduleRefresh();
         }
       }, 4000);

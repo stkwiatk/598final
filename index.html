@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Leisure Co.</title>
   <link rel="stylesheet" href="vibes.css">
-  <!-- jQuery + jQuery UI CDN -->
+
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-3gJwYp2JpNqFQvYhG8YkY9V+VYQjvZb+3j2Z7r3yK2k=" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lYX8mZ3s2qz4qP6bNwYBpi3ZC2B3kzZ9rBqf2Z3Z0rE=" crossorigin="anonymous"></script>
-  <!-- jQuery version verification + fallback loader -->
+
   <script>
     (function() {
       var expected = '3.7.1';
@@ -32,15 +32,15 @@
         s.onload = function(){ console.log('[jQuery] Fallback loaded successfully. Version: ' + (window.jQuery && jQuery.fn.jquery)); verify(); };
         document.head.appendChild(s);
       }
-      // Defer verification slightly to allow primary CDN load.
+
       setTimeout(verify, 50);
     })();
   </script>
-  <!-- Slick Carousel CDN -->
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
   <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-  <!-- Main JS -->
+
   <script src="main.js" defer></script>
 </head>
 <body>
@@ -76,7 +76,7 @@
   </header>
 
   <main>
-    <!-- UI Widget Section -->
+
     <section class="widgets">
       <h2 data-i18n="reminders.title">Team Reminders</h2>
       <div id="tips-accordion">
@@ -95,7 +95,6 @@
       </div>
     </section>
 
-    <!-- Blog Section -->
     <section class="blog" id="blog">
       <h2 data-i18n="blog.title">Company Notes</h2>
       <article>
@@ -108,7 +107,6 @@
       </article>
     </section>
 
-    <!-- Music / Now Playing Section -->
     <section class="prayer" id="music">
       <div class="music-layout">
         <div class="music-now">
@@ -125,7 +123,6 @@
       </div>
     </section>
 
-    <!-- Slideshow / Carousel Section -->
     <section class="slideshow" id="gallery">
       <h2 data-i18n="gallery.title">Employee Whereabouts</h2>
       <div class="carousel">
